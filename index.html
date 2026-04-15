@@ -367,7 +367,6 @@ header{padding:28px 0 0;border-bottom:1px solid var(--border);margin-bottom:32px
     <button class="ntab"     onclick="nav('compare',this)">Compare</button>
     <button class="ntab"     onclick="nav('formula',this)">Formula</button>
     <button class="ntab"     onclick="nav('research',this)">Research</button>
-    <button class="ntab"     onclick="nav('history',this)">Model History</button>
     <button class="ntab"     onclick="nav('settings',this)">Settings</button>
   </nav>
 </header>
@@ -543,7 +542,83 @@ header{padding:28px 0 0;border-bottom:1px solid var(--border);margin-bottom:32px
     </div>
     <div id="criteria-filter-results"><div style="font-size:12px;color:var(--text3);padding:8px">Check criteria above to filter teams.</div></div>
   </div>
+
+  <!-- Model History inline in Research -->
+  <div class="sec" style="margin-top:36px">How accurate has PUCK Score been? — 2018 to 2025</div>
+  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px 20px;margin-bottom:20px;font-size:12px;color:var(--text2);line-height:1.7">
+    Backward-looking accuracy from 2018–2024. Where did the model nail it, and where did it miss — and why?
+  </div>
+  <div id="history-content"></div>
 </div>
+<!-- ══════════════════ SETTINGS ══════════════════ -->
+<div id="pg-settings" class="pg">
+  <div class="sec">Configuration</div>
+  <div class="settings-grid">
+    <div class="set-card"><div class="set-title">Display</div><div class="set-desc">Customize rankings table.</div>
+      <div class="set-row"><div><div class="set-lbl">Show eliminated teams</div><div class="set-sub">Faded rows below cut line</div></div><button class="toggle on" id="tog-elim" onclick="this.classList.toggle('on');renderAll()"></button></div>
+      <div class="set-row"><div><div class="set-lbl">Dark horse highlights</div><div class="set-sub">Gold border on bubble teams</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+    <div class="set-card"><div class="set-title">Formula Presets</div><div class="set-desc">Switch weight profiles instantly — reflected on every tab.</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <button class="preset-btn on" onclick="applyPreset('balanced',this)" style="text-align:left">Balanced — 15/18/22/15/15/15</button>
+        <button class="preset-btn" onclick="applyPreset('goalie',this)" style="text-align:left">Goalie-first — 8/12/38/10/10/22</button>
+        <button class="preset-btn" onclick="applyPreset('analytics',this)" style="text-align:left">Analytics-heavy — 10/15/18/12/30/15</button>
+        <button class="preset-btn" onclick="applyPreset('momentum',this)" style="text-align:left">Momentum-first — 30/15/18/12/12/13</button>
+        <button class="preset-btn" onclick="applyPreset('special',this)" style="text-align:left">Special Teams — 12/14/18/30/12/14</button>
+      </div>
+    </div>
+    <div class="set-card"><div class="set-title">Conference Filter</div><div class="set-desc">Show one or both conferences in rankings.</div>
+      <div class="set-row"><div><div class="set-lbl">Eastern Conference</div></div><button class="toggle on" id="tog-east" onclick="this.classList.toggle('on');renderAll()"></button></div>
+      <div class="set-row"><div><div class="set-lbl">Western Conference</div></div><button class="toggle on" id="tog-west" onclick="this.classList.toggle('on');renderAll()"></button></div>
+    </div>
+    <div class="set-card"><div class="set-title">About PUCK Score</div><div class="set-desc">v4.0 — Cup Odds, Series Simulator, Scenario Lab, Model History.</div>
+      <div class="set-row"><span style="color:var(--text2);font-size:12px">Version</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:12px">v4.0</span></div>
+      <div class="set-row"><span style="color:var(--text2);font-size:12px">Season</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:12px">2025–26</span></div>
+      <div class="set-row"><span style="color:var(--text2);font-size:12px">Pillars</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:12px">6</span></div>
+      <div class="set-row"><span style="color:var(--text2);font-size:12px">Simulations</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:12px">5,000 per sim</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ CUP ODDS ══════════════════ -->
+<div id="pg-odds" class="pg">
+  <div class="sec">Stanley Cup win probability — Monte Carlo tournament simulation</div>
+  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px 20px;margin-bottom:20px;font-size:12px;color:var(--text2);line-height:1.7">
+    Simulates the full 4-round playoff bracket 3,000 times. Every game includes goaltending variance (±10 pts) to model the "hot goalie" effect — the biggest wild card in playoff hockey. Probabilities update live when you change weights on the Formula tab.
+  </div>
+  <div id="odds-chart"></div>
+  <div style="margin-top:28px"><div class="sec">Round-by-round survival rates</div><div id="odds-table"></div></div>
+</div>
+
+<!-- ══════════════════ SERIES SIMULATOR ══════════════════ -->
+<div id="pg-simulator" class="pg">
+  <div class="sec">Series simulator — 5,000 simulated 7-game series</div>
+  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px 20px;margin-bottom:20px;font-size:12px;color:var(--text2);line-height:1.7">
+    Pick any two teams. Runs 5,000 simulated series with goaltending variance, home-ice advantage, and momentum. Results update when you change teams or adjust formula weights.
+  </div>
+  <div class="cmp-selects" style="margin-bottom:20px">
+    <div class="cmp-sel-card"><div class="cmp-label">Team A</div><select class="cmp-select" id="sim-a" onchange="runSimulator()"></select></div>
+    <div class="cmp-vs">VS</div>
+    <div class="cmp-sel-card"><div class="cmp-label">Team B</div><select class="cmp-select" id="sim-b" onchange="runSimulator()"></select></div>
+  </div>
+  <div id="sim-results"></div>
+</div>
+
+<!-- ══════════════════ SCENARIO LAB ══════════════════ -->
+<div id="pg-scenario" class="pg">
+  <div class="sec">Scenario lab — simulate trades, injuries, and hot streaks</div>
+  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px 18px;margin-bottom:20px;font-size:12px;color:var(--text2);line-height:1.6">
+    Pick a team and drag any stat slider. PUCK Score and rank update live. Use this to answer: <em style="color:var(--ice)">What if a team's goalie got hurt? What if they go on a win streak? What if a trade improves their special teams?</em>
+  </div>
+  <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+    <select class="cmp-select" id="scenario-team" onchange="renderScenario()" style="width:240px;flex-shrink:0"></select>
+    <button style="padding:8px 18px;background:transparent;border:1px solid var(--border2);border-radius:4px;color:var(--ice);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.12em;cursor:pointer" onclick="resetScenario()">↺ Reset to actual stats</button>
+    <div id="scenario-change-badge"></div>
+  </div>
+  <div id="scenario-sliders"></div>
+  <div id="scenario-impact" style="margin-top:20px"></div>
+</div>
+</div><!-- end wrap -->
 <script>
 // ══════════════════════════════════════════════
 // DATA
@@ -1317,7 +1392,7 @@ function renderAll(){
   renderBracket();
   renderCompare();
   if(currentPage==='scout') renderScout(currentScoutIdx);
-  if(currentPage==='research') renderCriteriaFilter();
+  if(currentPage==='research'){renderCriteriaFilter();renderHistory();}
   if(currentPage==='odds') renderOdds();
   if(currentPage==='simulator') runSimulator();
   if(currentPage==='scenario') renderScenario();
@@ -1335,11 +1410,10 @@ function nav(page,btn){
   if(page==='compare')renderCompare();
   if(page==='bracket')renderBracket();
   if(page==='scout'){renderScoutButtons();renderScout(currentScoutIdx);}
-  if(page==='research')renderCriteriaFilter();
+  if(page==='research'){renderCriteriaFilter();renderHistory();}
   if(page==='odds')renderOdds();
   if(page==='simulator'){populateSimSelects();runSimulator();}
   if(page==='scenario'){populateScenarioSelect();renderScenario();}
-  if(page==='history')renderHistory();
 }
 
 // ══════════════════════════════════════════════
@@ -1595,7 +1669,7 @@ function runSimulator(){
 // ══════════════════════════════════════════════
 // SCENARIO LAB
 // ══════════════════════════════════════════════
-let scenarioOverrides={}; // teamIdx -> {streak, road, goalie, st, corsi, clutch}
+// scenarioOverrides defined in Scenario Lab section
 
 function populateScenarioSelect(){
   const sel=document.getElementById('scenario-team'); if(!sel||sel.options.length>0)return;
@@ -1608,129 +1682,237 @@ function getScenarioTeam(idx){
   return {...t, ...ov};
 }
 
-function renderScenario(){
-  const el=document.getElementById('scenario-panel'); if(!el)return;
-  const idx=+(document.getElementById('scenario-team')?.value||0);
-  const t=TEAMS[idx];
-  const ov=scenarioOverrides[idx]||{};
-  const modified=Object.keys(ov).length>0;
-  const tMod=getScenarioTeam(idx);
-  const origScore=calcScore(t), modScore=calcScore(tMod);
-  const scoreDelta=modScore-origScore;
+// ══════════════════════════════════════════════
+// SCENARIO LAB — fully rewritten
+// ══════════════════════════════════════════════
+let scenarioOverrides = {};
 
-  // Rank with modified stats
-  const allScored=TEAMS.map((team,i)=>{
-    const s=i===idx?calcScore(tMod):calcScore(team);
-    return {...team,_idx:i,score:s};
-  }).sort((a,b)=>b.score-a.score);
-  const origRanked=scoreTeams();
-  const newRank=allScored.findIndex(s=>s._idx===idx)+1;
-  const origRank=origRanked.findIndex(s=>s._idx===idx)+1;
+const SCENARIO_SLIDERS = [
+  { key:'streak',  label:'Win / Loss Streak',  min:-8,   max:10,  step:1,   unit:'streak',
+    display: v => v > 0 ? 'W'+v : v < 0 ? 'L'+Math.abs(v) : 'Neutral',
+    context: 'Simulates current form entering playoffs — positive = win streak, negative = losing skid' },
+  { key:'road',    label:'Road Win %',          min:0.30, max:0.80,step:0.01,unit:'%',
+    display: v => (v*100).toFixed(0)+'%',
+    context: 'Away game win rate. Cup winners average .556 road win % — sub .420 is a red flag' },
+  { key:'goalie',  label:'Goaltending',         min:60,   max:99,  step:1,   unit:'/100',
+    display: v => v+'/100',
+    context: 'Composite save % + GSAA score. 85+ = elite, 78+ = adequate, below 78 = red flag' },
+  { key:'st',      label:'Special Teams',       min:60,   max:99,  step:1,   unit:'/100',
+    display: v => v+'/100',
+    context: 'Combined PP% + PK% composite. 88+ = structural advantage every game in playoffs' },
+  { key:'corsi',   label:'Corsi / xGF%',        min:44,   max:62,  step:0.1, unit:'%',
+    display: v => parseFloat(v).toFixed(1)+'%',
+    context: 'Shot share and expected goals %. League average ~50%, elite is 54%+. Strips PDO luck' },
+  { key:'clutch',  label:'Close-Game W%',       min:40,   max:80,  step:1,   unit:'%',
+    display: v => v+'%',
+    context: '1-goal game win rate — correlates with playoff advancement at r=0.61. 60%+ = playoff DNA' },
+];
 
-  const badge=document.getElementById('scenario-change-badge');
-  if(badge){
-    if(modified){
-      const rd=origRank-newRank;
-      badge.innerHTML=`<span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:${scoreDelta>0?'var(--green)':'var(--red)'}">
-        Score: ${origScore.toFixed(1)} → ${modScore.toFixed(1)} (${scoreDelta>0?'+':''}${scoreDelta.toFixed(1)}) · Rank: #${origRank} → #${newRank} ${rd>0?'▲'+rd:rd<0?'▼'+Math.abs(rd):'—'}
-      </span>`;
-    } else {
-      badge.innerHTML='';
-    }
-  }
+const TRADE_SCENARIOS = [
+  { label:'Star goalie gets injured', changes:{goalie:-15}, desc:'Starting goalie goes down — backup takes over' },
+  { label:'Go on a hot streak (W6)', changes:{streak:6},   desc:'Team catches fire entering playoffs' },
+  { label:'Collapse (L5 skid)',       changes:{streak:-5},  desc:'Team stumbles badly before playoffs' },
+  { label:'Trade for PP specialist',  changes:{st:6},       desc:'Power play gets a major upgrade via trade' },
+  { label:'Shut-down D acquired',     changes:{corsi:3,st:4}, desc:'Trade brings elite defensive presence' },
+  { label:'Goalie peaks (.940 SV%)',  changes:{goalie:12},  desc:'Goalie goes on a historic playoff run' },
+  { label:'Road collapses',           changes:{road:-0.12}, desc:'Team goes ice cold on the road' },
+];
 
-  const sliders=[
-    {key:'streak', label:'Win/Loss Streak', min:-8, max:10, step:1, val:(ov.streak!==undefined?ov.streak:t.streak), fmt:v=>v>0?`W${v}`:v<0?`L${Math.abs(v)}`:'Neutral'},
-    {key:'road',   label:'Road Win %',      min:0.3,max:0.8,step:0.01,val:(ov.road!==undefined?ov.road:t.road),   fmt:v=>(v*100).toFixed(0)+'%'},
-    {key:'goalie', label:'Goaltending',     min:60, max:99, step:1, val:(ov.goalie!==undefined?ov.goalie:t.goalie),fmt:v=>v+'/100'},
-    {key:'st',     label:'Special Teams',   min:60, max:99, step:1, val:(ov.st!==undefined?ov.st:t.st),           fmt:v=>v+'/100'},
-    {key:'corsi',  label:'Corsi / xGF%',   min:44, max:62, step:0.1,val:(ov.corsi!==undefined?ov.corsi:t.corsi), fmt:v=>v.toFixed(1)+'%'},
-    {key:'clutch', label:'Close-Game W%',   min:40, max:80, step:1, val:(ov.clutch!==undefined?ov.clutch:t.clutch),fmt:v=>v+'%'},
-  ];
-
-  const slidersHTML=sliders.map(s=>{
-    const origVal=[t.streak,t.road,t.goalie,t.st,t.corsi,t.clutch][['streak','road','goalie','st','corsi','clutch'].indexOf(s.key)];
-    const changed=ov[s.key]!==undefined&&ov[s.key]!==origVal;
-    return `<div style="background:var(--bg4);border-radius:5px;padding:14px;border-left:2px solid ${changed?'var(--ice)':'var(--border)'}">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600">${s.label}</span>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:${changed?'var(--ice)':'var(--text2)'}">${s.fmt(parseFloat(s.val))}</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:10px;color:var(--text3);min-width:28px">${s.fmt(parseFloat(s.min))}</span>
-        <input type="range" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.val}" style="flex:1;accent-color:var(--ice)"
-          oninput="setScenarioVal(${idx},'${s.key}',this.value,this,${origVal})">
-        <span style="font-size:10px;color:var(--text3);min-width:28px;text-align:right">${s.fmt(parseFloat(s.max))}</span>
-      </div>
-      ${changed?`<div style="font-size:10px;color:var(--text3);margin-top:4px">Original: ${s.fmt(parseFloat(origVal))}</div>`:''}
-    </div>`;
-  }).join('');
-
-  // Show how this team now compares in the full ranking
-  const rankHTML=allScored.slice(0,8).map((team,i)=>{
-    const isThis=team._idx===idx;
-    return `<div style="display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:4px;background:${isThis?'rgba(0,207,255,0.08)':'var(--bg4)'};margin-bottom:3px;border:1px solid ${isThis?'var(--ice)':'transparent'}">
-      <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--text2);min-width:20px">#${i+1}</span>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:${isThis?'700':'400'};flex:1;color:${isThis?'var(--ice)':'var(--text)'}">${team.name}${isThis&&modified?' (modified)':''}</span>
-      <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:${isThis?'var(--ice)':'var(--text2)'}">${team.score.toFixed(1)}</span>
-    </div>`;
-  }).join('');
-
-  el.innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 280px;gap:20px">
-      <div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:12px">Adjust ${t.name}'s stats</div>
-        <div style="display:flex;flex-direction:column;gap:10px">${slidersHTML}</div>
-      </div>
-      <div>
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:14px">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">PUCK Score impact</div>
-          <div style="font-family:'Bebas Neue',cursive;font-size:48px;color:${scoreDelta>0?'var(--green)':scoreDelta<0?'var(--red)':'var(--text)'};line-height:1">${modScore.toFixed(1)}</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:${scoreDelta>0?'var(--green)':scoreDelta<0?'var(--red)':'var(--text2)'}">${scoreDelta>0?'+':''}${scoreDelta.toFixed(1)} from original (${origScore.toFixed(1)})</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--text2);margin-top:6px">Rank: #${origRank} → #${newRank}</div>
-        </div>
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Updated top 8</div>
-          ${rankHTML}
-        </div>
-      </div>
-    </div>`;
+function populateScenarioSelect(){
+  const sel = document.getElementById('scenario-team');
+  if(!sel || sel.options.length > 0) return;
+  TEAMS.forEach((t,i) => {
+    const o = document.createElement('option');
+    o.value = i; o.textContent = t.name; sel.appendChild(o);
+  });
 }
 
-function setScenarioVal(idx, key, val, slider, origVal){
-  if(!scenarioOverrides[idx]) scenarioOverrides[idx]={};
-  const num=parseFloat(val);
-  // Store override only if actually changed from original
-  if(Math.abs(num-parseFloat(origVal))<0.001){
-    delete scenarioOverrides[idx][key];
-  } else {
-    scenarioOverrides[idx][key]=num;
-  }
-  // Update the label inline
-  const parent=slider.parentElement.parentElement;
-  const label=parent.querySelector('span:last-of-type');
-  // Re-render scenario
+function applyTradeScenario(teamIdx, changes){
+  if(!scenarioOverrides[teamIdx]) scenarioOverrides[teamIdx] = {};
+  const t = TEAMS[teamIdx];
+  Object.entries(changes).forEach(([key, delta]) => {
+    const orig = t[key];
+    const current = scenarioOverrides[teamIdx][key] !== undefined ? scenarioOverrides[teamIdx][key] : orig;
+    scenarioOverrides[teamIdx][key] = Math.min(
+      key==='goalie'||key==='st'||key==='clutch' ? 99 : key==='streak' ? 10 : key==='road' ? 0.80 : 62,
+      Math.max(
+        key==='goalie'||key==='st'||key==='clutch' ? 60 : key==='streak' ? -8 : key==='road' ? 0.30 : 44,
+        orig + delta
+      )
+    );
+  });
   renderScenario();
 }
 
 function resetScenario(){
-  const idx=+(document.getElementById('scenario-team')?.value||0);
-  scenarioOverrides[idx]={};
+  const idx = +(document.getElementById('scenario-team')?.value || 0);
+  scenarioOverrides[idx] = {};
   renderScenario();
 }
 
-// ══════════════════════════════════════════════
-// MODEL HISTORY — how accurate has PUCK been?
-// ══════════════════════════════════════════════
-const HISTORY_DATA=[
-  {year:2018,cupWinner:'Washington Capitals',puckTop:'Vegas Golden Knights',puckWinnerRank:4,notes:'Vegas was an expansion team surprise. PUCK ranked them #1 (momentum W15, strong goaltending). Washington won on Ovechkin finally peaking. Model had Washington #4.',correct:false,upset:true},
-  {year:2019,cupWinner:'St. Louis Blues',puckTop:'Tampa Bay Lightning',puckWinnerRank:11,notes:'Biggest upset in recent history. Tampa was historic (62 wins) and would have ranked #1 by a mile. Blues were 30th in January before rallying. PUCK would have had them near the cut line.',correct:false,upset:true},
-  {year:2020,cupWinner:'Tampa Bay Lightning',puckTop:'Tampa Bay Lightning',puckWinnerRank:1,notes:'PUCK nails it. Tampa had elite goaltending (Vasilevskiy), top PP%, best road record, strong Corsi. Every pillar green. Model would have had them #1 by double digits.',correct:true,upset:false},
-  {year:2021,cupWinner:'Tampa Bay Lightning',puckTop:'Tampa Bay Lightning',puckWinnerRank:1,notes:'Back-to-back. PUCK correct again. Tampa W8 streak entering, .930 SV%, 87% PK. Textbook PUCK profile — model would have been very confident.',correct:true,upset:false},
-  {year:2022,cupWinner:'Colorado Avalanche',puckTop:'Colorado Avalanche',puckWinnerRank:1,notes:'PUCK nails it. Colorado had the Presidents Trophy, elite Corsi (58%+), hot streak, strong road record. Would have scored 85+ on the model. Dominant across all 6 pillars.',correct:true,upset:false},
-  {year:2023,cupWinner:'Vegas Golden Knights',puckTop:'Boston Bruins',puckWinnerRank:2,notes:'Boston had an historic 65-win season and would have ranked #1. Vegas was #2-3. PUCK missed the winner but had them in top 3. Boston collapsed in R1 — the L5 streak entering playoffs was the red flag PUCK would have flagged.',correct:false,upset:false},
-  {year:2024,cupWinner:'Florida Panthers',puckTop:'Colorado Avalanche',puckWinnerRank:3,notes:'Florida repeated. PUCK would have had Colorado #1, Florida likely #3 (strong goaltending, elite road record, good clutch). The model flagged Florida\'s Corsi weakness but they won anyway — testament to Bobrovsky\'s peak goaltending.',correct:false,upset:false},
-];
+function renderScenario(){
+  const slidersEl = document.getElementById('scenario-sliders');
+  const impactEl  = document.getElementById('scenario-impact');
+  if(!slidersEl || !impactEl) return;
+
+  const idx = +(document.getElementById('scenario-team')?.value || 0);
+  const t = TEAMS[idx];
+  if(!t) return;
+
+  const ov = scenarioOverrides[idx] || {};
+  const tMod = {...t, ...ov};
+  const origScore = calcScore(t);
+  const modScore  = calcScore(tMod);
+  const delta     = modScore - origScore;
+  const modified  = Object.keys(ov).length > 0;
+
+  // Update change badge
+  const badge = document.getElementById('scenario-change-badge');
+  if(badge){
+    if(modified){
+      const origRank  = scoreTeams().findIndex(s=>s._idx===idx)+1;
+      const allMod    = TEAMS.map((tm,i)=>({...tm,_idx:i,score:i===idx?modScore:calcScore(tm)})).sort((a,b)=>b.score-a.score);
+      const newRank   = allMod.findIndex(s=>s._idx===idx)+1;
+      const rd        = origRank - newRank;
+      badge.style.cssText = 'font-family:Barlow Condensed,sans-serif;font-size:13px;font-weight:700;padding:4px 12px;border-radius:3px;background:' + (delta>=0?'rgba(52,208,88,0.12)':'rgba(255,45,85,0.12)') + ';color:' + (delta>=0?'var(--green)':'var(--red)');
+      badge.textContent = (delta>=0?'+':'') + delta.toFixed(1) + ' pts · Rank: #'+origRank+' → #'+newRank + (rd>0?' ▲'+rd:rd<0?' ▼'+Math.abs(rd):'');
+    } else {
+      badge.style.cssText = '';
+      badge.textContent = '';
+    }
+  }
+
+  // ── SLIDERS ──
+  let sHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:20px">';
+  SCENARIO_SLIDERS.forEach(s => {
+    const origVal = t[s.key];
+    const curVal  = ov[s.key] !== undefined ? ov[s.key] : origVal;
+    const changed = ov[s.key] !== undefined && Math.abs(ov[s.key] - origVal) > 0.001;
+    const dispVal = s.display(curVal);
+    const dispOrig= s.display(origVal);
+
+    sHTML += '<div style="background:var(--bg3);border:1px solid var(--border' + (changed?'3':'') + ');border-radius:6px;padding:16px">';
+    sHTML += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
+    sHTML += '<span style="font-family:Barlow Condensed,sans-serif;font-size:13px;font-weight:700">' + s.label + '</span>';
+    sHTML += '<span style="font-family:Barlow Condensed,sans-serif;font-size:15px;font-weight:700;color:' + (changed?'var(--ice)':'var(--text2)') + '">' + dispVal + '</span>';
+    sHTML += '</div>';
+    sHTML += '<div style="font-size:10px;color:var(--text3);margin-bottom:10px;line-height:1.4">' + s.context + '</div>';
+    sHTML += '<input type="range" min="' + s.min + '" max="' + s.max + '" step="' + s.step + '" value="' + curVal + '" style="width:100%;accent-color:var(--ice);margin-bottom:6px" ';
+    sHTML += 'id="sl_' + idx + '_' + s.key + '" oninput="onSliderChange(' + idx + ',\'' + s.key + '\',this.value)">';
+    sHTML += '<div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3)">';
+    sHTML += '<span>' + s.display(s.min) + '</span>';
+    if(changed) sHTML += '<span style="color:var(--text2)">Original: ' + dispOrig + '</span>';
+    sHTML += '<span>' + s.display(s.max) + '</span>';
+    sHTML += '</div></div>';
+  });
+  sHTML += '</div>';
+
+  // ── TRADE SCENARIOS ──
+  sHTML += '<div class="sec" style="margin-bottom:12px">Quick scenarios</div>';
+  sHTML += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:8px">';
+  TRADE_SCENARIOS.forEach((sc,i) => {
+    const changesJson = JSON.stringify(sc.changes);
+    sHTML += '<button class="preset-btn" style="text-align:left;padding:10px 14px;height:auto;display:block;width:100%" ';
+    sHTML += 'onclick="applyTradeScenario(' + idx + ',' + changesJson + ')">';
+    sHTML += '<div style="font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:700;margin-bottom:3px">' + sc.label + '</div>';
+    sHTML += '<div style="font-size:10px;color:var(--text2)">' + sc.desc + '</div>';
+    sHTML += '</button>';
+  });
+  sHTML += '</div>';
+  slidersEl.innerHTML = sHTML;
+
+  // ── IMPACT PANEL ──
+  const origRanked = scoreTeams();
+  const origRank   = origRanked.findIndex(s=>s._idx===idx)+1;
+  const allMod     = TEAMS.map((tm,i)=>({...tm,_idx:i,score:i===idx?modScore:calcScore(tm)})).sort((a,b)=>b.score-a.score);
+  const newRank    = allMod.findIndex(s=>s._idx===idx)+1;
+  const origCrit   = getCritStatus(t);
+  const modCrit    = getCritStatus(tMod);
+  const origPass   = origCrit.filter(c=>c.pass).length;
+  const modPass    = modCrit.filter(c=>c.pass).length;
+
+  let iHTML = '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px">';
+
+  // Score tile
+  iHTML += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px;text-align:center">';
+  iHTML += '<div style="font-family:Barlow Condensed,sans-serif;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">PUCK Score</div>';
+  iHTML += '<div style="font-family:Bebas Neue,cursive;font-size:42px;color:' + (delta>0?'var(--green)':delta<0?'var(--red)':'var(--text)') + ';line-height:1">' + modScore.toFixed(1) + '</div>';
+  iHTML += '<div style="font-size:11px;color:var(--text2)">' + (delta>=0?'+':'') + delta.toFixed(1) + ' from ' + origScore.toFixed(1) + '</div>';
+  iHTML += '</div>';
+
+  // Rank tile
+  const rankDelta = origRank - newRank;
+  iHTML += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px;text-align:center">';
+  iHTML += '<div style="font-family:Barlow Condensed,sans-serif;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Rank</div>';
+  iHTML += '<div style="font-family:Bebas Neue,cursive;font-size:42px;color:' + (rankDelta>0?'var(--green)':rankDelta<0?'var(--red)':'var(--text)') + ';line-height:1">#' + newRank + '</div>';
+  iHTML += '<div style="font-size:11px;color:var(--text2)">' + (rankDelta>0?'▲ up '+rankDelta:rankDelta<0?'▼ down '+Math.abs(rankDelta):'no change') + ' from #' + origRank + '</div>';
+  iHTML += '</div>';
+
+  // Criteria tile
+  const critDelta = modPass - origPass;
+  iHTML += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px;text-align:center">';
+  iHTML += '<div style="font-family:Barlow Condensed,sans-serif;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Criteria passed</div>';
+  iHTML += '<div style="font-family:Bebas Neue,cursive;font-size:42px;color:' + (critDelta>0?'var(--green)':critDelta<0?'var(--red)':'var(--text)') + ';line-height:1">' + modPass + '/6</div>';
+  iHTML += '<div style="font-size:11px;color:var(--text2)">' + (critDelta>0?'+'+critDelta+' vs original':critDelta<0?critDelta+' vs original':'unchanged') + '</div>';
+  iHTML += '</div>';
+  iHTML += '</div>';
+
+  // Criteria change list — show what flipped
+  const flips = modCrit.map((mc,i) => {
+    const oc = origCrit[i];
+    if(mc.pass && !oc.pass) return {label:mc.label, dir:'up', msg:'Now PASSES — ' + mc.why};
+    if(!mc.pass && oc.pass) return {label:mc.label, dir:'down', msg:'Now FAILS — ' + mc.why};
+    return null;
+  }).filter(Boolean);
+
+  if(flips.length > 0){
+    iHTML += '<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:16px;margin-bottom:16px">';
+    iHTML += '<div style="font-family:Barlow Condensed,sans-serif;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Criteria that changed</div>';
+    flips.forEach(f => {
+      const col = f.dir==='up' ? 'var(--green)' : 'var(--red)';
+      const ico = f.dir==='up' ? '✅' : '❌';
+      iHTML += '<div style="padding:8px 12px;border-radius:4px;background:var(--bg4);margin-bottom:6px;border-left:2px solid ' + col + '">';
+      iHTML += '<div style="font-family:Barlow Condensed,sans-serif;font-size:13px;font-weight:700;color:' + col + '">' + ico + ' ' + f.label + '</div>';
+      iHTML += '<div style="font-size:11px;color:var(--text2);margin-top:3px">' + f.msg + '</div>';
+      iHTML += '</div>';
+    });
+    iHTML += '</div>';
+  } else if(modified) {
+    iHTML += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px 16px;margin-bottom:16px;font-size:12px;color:var(--text2)">Changes applied — no criteria flipped. Adjust sliders further to see pass/fail thresholds change.</div>';
+  }
+
+  // Updated top-8 ranking with this team modified
+  iHTML += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px">';
+  iHTML += '<div style="font-family:Barlow Condensed,sans-serif;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:12px">Updated rankings (top 8)</div>';
+  allMod.slice(0,8).forEach((team,i) => {
+    const isThis = team._idx === idx;
+    const bg = isThis ? 'rgba(0,207,255,0.08)' : (i%2===0 ? 'var(--bg4)' : 'var(--bg3)');
+    const border = isThis ? '1px solid var(--ice)' : '1px solid transparent';
+    iHTML += '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:4px;background:' + bg + ';margin-bottom:3px;border:' + border + '">';
+    iHTML += '<span style="font-family:Barlow Condensed,sans-serif;font-size:12px;color:var(--text2);min-width:24px">#' + (i+1) + '</span>';
+    iHTML += '<span style="font-family:Barlow Condensed,sans-serif;font-size:14px;font-weight:' + (isThis?'700':'400') + ';flex:1;color:' + (isThis?'var(--ice)':'var(--text)') + '">' + team.name + (isThis&&modified?' ✦':'') + '</span>';
+    iHTML += '<span style="font-family:Barlow Condensed,sans-serif;font-size:13px;color:' + (isThis?'var(--ice)':'var(--text2)') + '">' + team.score.toFixed(1) + '</span>';
+    iHTML += '</div>';
+  });
+  iHTML += '</div>';
+
+  impactEl.innerHTML = iHTML;
+}
+
+function onSliderChange(teamIdx, key, val){
+  if(!scenarioOverrides[teamIdx]) scenarioOverrides[teamIdx] = {};
+  const orig = TEAMS[teamIdx][key];
+  const num = parseFloat(val);
+  if(Math.abs(num - orig) < 0.001){
+    delete scenarioOverrides[teamIdx][key];
+  } else {
+    scenarioOverrides[teamIdx][key] = num;
+  }
+  renderScenario();
+}
+
+function setScenarioVal(teamIdx, key, val){ onSliderChange(teamIdx, key, val); }
+
 
 function renderHistory(){
   const el=document.getElementById('history-content'); if(!el)return;
