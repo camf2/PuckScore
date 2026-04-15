@@ -582,22 +582,74 @@ function calcScore(t,w){ w=w||getW(); return Math.round(getPillars(t).reduce((s,
 function scoreTeams(){ return TEAMS.map(t=>({...t,score:calcScore(t)})).sort((a,b)=>b.score-a.score) }
 
 // Criteria thresholds
+// CRITERIA — all thresholds operate on the SAME scale passed to getCritStatus
+// Momentum uses streakScore(streak) → 0-100. Everything else uses raw team value.
 const CRITERIA = [
-  {key:'streak',  label:'Momentum',       pass:v=>v>=70,  warn:v=>v>=60,  fmt:t=>t.streak>0?`W${t.streak}`:t.streak<0?`L${Math.abs(t.streak)}`:'—',     tip:s=>s>=70?'Hot entering playoffs':'Cold — major concern'},
-  {key:'road',    label:'Road Win %',     pass:v=>v>=0.55,warn:v=>v>=0.42,fmt:t=>(t.road*100).toFixed(1)+'%',                                               tip:s=>s>=0.55?'Road-tested':'Road struggles — R1 risk'},
-  {key:'goalie',  label:'Goaltending',    pass:v=>v>=85,  warn:v=>v>=78,  fmt:t=>t.goalie+'/100',                                                           tip:s=>s>=85?'Elite goaltending':'Below-average net coverage'},
-  {key:'st',      label:'Special Teams',  pass:v=>v>=88,  warn:v=>v>=82,  fmt:t=>t.st+'/100',                                                               tip:s=>s>=88?'ST advantage every game':'Structural deficit on ST'},
-  {key:'corsi',   label:'Corsi / xGF',   pass:v=>v>=54,  warn:v=>v>=50,  fmt:t=>t.corsi.toFixed(1)+'%',                                                    tip:s=>s>=54?'True possession dominance':'Possession is a concern'},
-  {key:'clutch',  label:'Close-Game W%',  pass:v=>v>=60,  warn:v=>v>=54,  fmt:t=>t.clutch+'%',                                                              tip:s=>s>=60?'Wins tight games':'Struggles in 1-goal situations'},
+  {
+    key:'streak',
+    label:'Momentum',
+    // v = streakScore(streak) → 0–100
+    pass:v=>v>=82,   // W3+ → score ≥82
+    warn:v=>v>=70,   // W0  → score=70, borderline
+    fmt:t=>{
+      const s=t.streak;
+      if(s>0) return `W${s} 🔥`;
+      if(s<0) return `L${Math.abs(s)} 🧊`;
+      return '— Neutral';
+    },
+    tip:v=>v>=82?'Hot streak — strong playoff momentum':v>=70?'Neutral form — neither hot nor cold':'Cold streak — serious concern entering playoffs',
+  },
+  {
+    key:'road',
+    label:'Road Win %',
+    // v = team.road * 100 → 0–100 scale
+    pass:v=>v>=55, warn:v=>v>=42,
+    fmt:t=>(t.road*100).toFixed(1)+'%',
+    tip:v=>v>=55?'Road-tested — wins away from home':v>=42?'Average road record — manageable':'Road struggles — eliminated in R1 at 82% rate',
+  },
+  {
+    key:'goalie',
+    label:'Goaltending',
+    pass:v=>v>=85, warn:v=>v>=78,
+    fmt:t=>t.goalie+'/100',
+    tip:v=>v>=85?'Elite goaltending — Cup-caliber backstop':v>=78?'Adequate — not a liability':'Below average — goaltending is a red flag',
+  },
+  {
+    key:'st',
+    label:'Special Teams',
+    pass:v=>v>=88, warn:v=>v>=82,
+    fmt:t=>t.st+'/100',
+    tip:v=>v>=88?'ST advantage compounds every game':v>=82?'Average net ST — neutral factor':'Structural ST deficit — disadvantage every game',
+  },
+  {
+    key:'corsi',
+    label:'Corsi / xGF',
+    pass:v=>v>=54, warn:v=>v>=50,
+    fmt:t=>t.corsi.toFixed(1)+'%',
+    tip:v=>v>=54?'True possession dominance — sustainable':v>=50?'Near league average — adequate':'Possession concern — may be overperforming',
+  },
+  {
+    key:'clutch',
+    label:'Close-Game W%',
+    pass:v=>v>=60, warn:v=>v>=54,
+    fmt:t=>t.clutch+'%',
+    tip:v=>v>=60?'Wins tight games — playoff DNA':v>=54?'Average in close games — coin-flip risk':'Struggles in 1-goal games — massive playoff red flag',
+  },
 ];
 
 function getCritStatus(team){
-  const vals=[streakScore(team.streak),team.road,team.goalie,team.st,team.corsi,team.clutch/100];
-  // re-use raw values
+  const checkVals = [
+    streakScore(team.streak),   // momentum: 0–100 converted score
+    team.road * 100,            // road: converted to 0–100 (0.73 → 73)
+    team.goalie,                // goaltending: 0–100
+    team.st,                    // special teams: 0–100
+    team.corsi,                 // corsi: ~45–60
+    team.clutch,                // clutch: 0–100
+  ];
   return CRITERIA.map((c,i)=>{
-    const rawVal = [team.streak,team.road,team.goalie,team.st,team.corsi,team.clutch][i];
-    const pass=c.pass(rawVal), warn=c.warn(rawVal);
-    return {pass,warn,fail:!pass&&!warn,val:c.fmt(team),tip:c.tip(rawVal),label:c.label};
+    const v=checkVals[i];
+    const pass=c.pass(v), warn=c.warn(v);
+    return {pass, warn, fail:!pass&&!warn, val:c.fmt(team), tip:c.tip(v), label:c.label};
   });
 }
 
@@ -655,6 +707,7 @@ function renderRankings(){
 }
 
 function showTeamDetail(idx){
+  currentDetailIdx=idx;
   document.querySelectorAll('.trow').forEach(r=>r.classList.remove('selected'));
   const rows=document.querySelectorAll('.trow');
   // find the right row
@@ -864,8 +917,11 @@ function renderScoutButtons(){
 }
 
 function renderScout(idx,btn){
-  document.querySelectorAll('.scout-team-btn').forEach(b=>b.classList.remove('on'));
-  if(btn) btn.classList.add('on');
+  currentScoutIdx=idx;
+  document.querySelectorAll('.scout-team-btn').forEach((b,i)=>{
+    b.classList.remove('on');
+    if(i===idx) b.classList.add('on');
+  });
   const t=TEAMS[idx]; const score=calcScore(t); const grade=getGrade(score);
   const crit=getCritStatus(t);
   const passCount=crit.filter(c=>c.pass).length;
@@ -978,11 +1034,11 @@ function renderCompare(){
   // Criteria grid — pass/fail side by side
   let cgHTML='';
   CRITERIA.forEach((c,i)=>{
-    const rawA=[a.streak,a.road,a.goalie,a.st,a.corsi,a.clutch][i];
-    const rawB=[b.streak,b.road,b.goalie,b.st,b.corsi,b.clutch][i];
-    const aPass=c.pass(rawA), aWarn=c.warn(rawA), aFail=!aPass&&!aWarn;
-    const bPass=c.pass(rawB), bWarn=c.warn(rawB), bFail=!bPass&&!bWarn;
-    const aEdge=rawA>rawB, bEdge=rawB>rawA;
+    const checkA=[streakScore(a.streak),a.road,a.goalie,a.st,a.corsi,a.clutch][i];
+    const checkB=[streakScore(b.streak),b.road,b.goalie,b.st,b.corsi,b.clutch][i];
+    const aPass=c.pass(checkA), aWarn=c.warn(checkA), aFail=!aPass&&!aWarn;
+    const bPass=c.pass(checkB), bWarn=c.warn(checkB), bFail=!bPass&&!bWarn;
+    const aEdge=checkA>checkB, bEdge=checkB>checkA;
     cgHTML+=`
       <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">${c.label}</div>
@@ -1002,8 +1058,9 @@ function renderCompare(){
 
   // Series prediction
   const seriesLen=diff>12?'4–1':diff>7?'4–2':diff>3?'4–3':'7 games possible';
-  const aAdvantages=CRITERIA.filter((c,i)=>{const ra=[a.streak,a.road,a.goalie,a.st,a.corsi,a.clutch][i],rb=[b.streak,b.road,b.goalie,b.st,b.corsi,b.clutch][i];return ra>rb}).map(c=>c.label);
-  const bAdvantages=CRITERIA.filter((c,i)=>{const ra=[a.streak,a.road,a.goalie,a.st,a.corsi,a.clutch][i],rb=[b.streak,b.road,b.goalie,b.st,b.corsi,b.clutch][i];return rb>ra}).map(c=>c.label);
+  const getCheckVals=t=>[streakScore(t.streak),t.road*100,t.goalie,t.st,t.corsi,t.clutch];
+  const aAdvantages=CRITERIA.filter((c,i)=>{const ra=getCheckVals(a)[i],rb=getCheckVals(b)[i];return ra>rb}).map(c=>c.label);
+  const bAdvantages=CRITERIA.filter((c,i)=>{const ra=getCheckVals(a)[i],rb=getCheckVals(b)[i];return rb>ra}).map(c=>c.label);
 
   document.getElementById('series-pred').innerHTML=`
     <div class="sp-header">Series Projection — if these two met in the playoffs</div>
@@ -1047,9 +1104,18 @@ function applyPreset(name,btn){
   renderAll();
 }
 
-function setCut(v){ cutLine=+v; document.getElementById('cut-disp').textContent=v; renderRankings(); }
+function setCut(v){ cutLine=+v; document.getElementById('cut-disp').textContent=v; renderAll(); }
 
-function renderAll(){ renderRankings(); renderBracket(); renderCompare(); }
+// Track active state so sliders always re-render whatever is open
+let currentPage='rankings', currentScoutIdx=0, currentDetailIdx=-1;
+
+function renderAll(){
+  renderRankings();
+  renderBracket();
+  renderCompare();
+  if(currentPage==='scout' && currentScoutIdx>=0) renderScout(currentScoutIdx,null);
+  if(currentDetailIdx>=0) showTeamDetail(currentDetailIdx);
+}
 
 // ══════════════════════════════════════════════
 // NAV
@@ -1059,6 +1125,7 @@ function nav(page,btn){
   document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('on'));
   document.getElementById('pg-'+page).classList.add('on');
   if(btn)btn.classList.add('on');
+  currentPage=page;
   if(page==='compare')renderCompare();
   if(page==='bracket')renderBracket();
   if(page==='scout')renderScoutButtons();
@@ -1070,6 +1137,7 @@ function nav(page,btn){
 populateSelects();
 renderAll();
 renderScoutButtons();
+renderScout(0, null); // load Colorado by default
 </script>
 </body>
 </html>
