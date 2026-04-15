@@ -399,6 +399,25 @@ header{padding:28px 0 0;border-bottom:1px solid var(--border);margin-bottom:32px
         <div class="stile"><div class="stile-lbl">Eliminated</div><div class="stile-val" style="color:var(--red)" id="sp-out">—</div></div>
       </div>
       <button class="refresh-btn" onclick="renderAll()">↻ &nbsp;Recalculate scores</button>
+
+      <!-- What-if insights -->
+      <div style="margin-top:14px">
+        <div class="sec" style="margin-bottom:10px">If you change the weighting...</div>
+        <div id="whatif-panel"></div>
+      </div>
+
+      <!-- Quick weight presets on rankings page -->
+      <div style="margin-top:14px">
+        <div class="sec" style="margin-bottom:10px">Quick presets</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="preset-btn on" onclick="applyPreset('balanced',this)" style="text-align:left;font-size:10px">Balanced (default)</button>
+          <button class="preset-btn" onclick="applyPreset('goalie',this)" style="text-align:left;font-size:10px">Goalie-first</button>
+          <button class="preset-btn" onclick="applyPreset('analytics',this)" style="text-align:left;font-size:10px">Analytics-heavy</button>
+          <button class="preset-btn" onclick="applyPreset('momentum',this)" style="text-align:left;font-size:10px">Momentum-first</button>
+          <button class="preset-btn" onclick="applyPreset('special',this)" style="text-align:left;font-size:10px">Special Teams focus</button>
+        </div>
+        <div style="margin-top:10px;font-size:10px;color:var(--text3);line-height:1.5">Fine-tune on the Formula tab. Rankings update instantly as weights change.</div>
+      </div>
     </div>
   </div>
 </div>
@@ -504,6 +523,21 @@ header{padding:28px 0 0;border-bottom:1px solid var(--border);margin-bottom:32px
     <div class="rc"><span class="rtag rt5">Special Teams</span><div class="rc-title">PP/PK net is compounding</div><div class="rc-body">Playoff refs call 12–17% more deliberate penalties. A +5 net ST edge generates ~1.8 extra PP goals per 7-game series — nearly a full game of structural advantage.</div><div class="insight"><strong>Why it snowballs:</strong> Teams that kill penalties effectively preserve leads and force risky offensive play — which generates more penalties. The cycle compounds over 4–7 games.</div></div>
     <div class="rc"><span class="rtag rt6">Corsi / xGF</span><div class="rc-title">Strips luck from the record</div><div class="rc-body">PDO regresses to ~100 over a full season. Corsi and xGF% persist — they measure true shot quality not bounces. Top-quartile xGF teams advance to R3 at 58% vs 34%.</div><div style="margin-top:12px"><div class="rstat"><span class="rstat-l">Top xGF% quartile → R3</span><span class="rstat-v" style="color:var(--green)">58%</span></div><div class="rstat"><span class="rstat-l">Bottom xGF% quartile → R3</span><span class="rstat-v" style="color:var(--red)">34%</span></div><div class="rstat"><span class="rstat-l">PDO regression rate</span><span class="rstat-v">~1.000</span></div><div class="rstat"><span class="rstat-l">Corsi correlation with W%</span><span class="rstat-v">r = 0.52</span></div></div></div>
   </div>
+
+  <!-- Teams that fit criteria -->
+  <div class="sec" style="margin-top:32px">Teams that meet your criteria</div>
+  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:20px;margin-bottom:16px">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.6">Check any combination of criteria below — the model shows which teams currently pass all of them. This is PUCK Score's KenPom filter: define what matters most, see who makes the cut.</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;background:var(--bg4);padding:8px 12px;border-radius:4px"><input type="checkbox" class="crit-filter-check" value="0" onchange="renderCriteriaFilter()" style="accent-color:var(--ice)"><span>🔥 Hot Momentum</span></label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;background:var(--bg4);padding:8px 12px;border-radius:4px"><input type="checkbox" class="crit-filter-check" value="1" onchange="renderCriteriaFilter()" style="accent-color:var(--ice)"><span>✈️ Road-tested (55%+)</span></label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;background:var(--bg4);padding:8px 12px;border-radius:4px"><input type="checkbox" class="crit-filter-check" value="2" onchange="renderCriteriaFilter()" style="accent-color:var(--ice)"><span>🥅 Elite Goaltending (85+)</span></label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;background:var(--bg4);padding:8px 12px;border-radius:4px"><input type="checkbox" class="crit-filter-check" value="3" onchange="renderCriteriaFilter()" style="accent-color:var(--ice)"><span>⚔️ ST Advantage (88+)</span></label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;background:var(--bg4);padding:8px 12px;border-radius:4px"><input type="checkbox" class="crit-filter-check" value="4" onchange="renderCriteriaFilter()" style="accent-color:var(--ice)"><span>🎯 Possession dominant (54%+)</span></label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;background:var(--bg4);padding:8px 12px;border-radius:4px"><input type="checkbox" class="crit-filter-check" value="5" onchange="renderCriteriaFilter()" style="accent-color:var(--ice)"><span>🏒 Clutch W% (60%+)</span></label>
+    </div>
+    <div id="criteria-filter-results"><div style="font-size:12px;color:var(--text3);padding:8px">Check criteria above to filter teams.</div></div>
+  </div>
 </div>
 
 <!-- ══════════════════ SETTINGS ══════════════════ -->
@@ -537,6 +571,7 @@ header{padding:28px 0 0;border-bottom:1px solid var(--border);margin-bottom:32px
 </div>
 
 </div><!-- end wrap -->
+<!-- RANKINGS PAGE: inject preset bar + weight sliders inline -->
 <script>
 // ══════════════════════════════════════════════
 // DATA
@@ -560,117 +595,152 @@ const TEAMS = [
   {name:"Los Angeles Kings",   abbr:"LAK",conf:"W",seed:8,streak:-2, road:0.49,goalie:76,st:76,corsi:49.1,clutch:50,wins:35,losses:26},
 ];
 
-const P_COLORS = ['#00cfff','#ff2d55','#ffcc00','#34d058','#bf5af2','#ff9f0a'];
-const P_NAMES  = ['Momentum','Road W%','Goaltending','Special Teams','Corsi/xGF','Clutch'];
-const PRESETS  = {
-  balanced: [15,18,22,15,15,15],
-  goalie:   [8,12,38,10,10,22],
+const P_COLORS=['#00cfff','#ff2d55','#ffcc00','#34d058','#bf5af2','#ff9f0a'];
+const P_NAMES=['Momentum','Road W%','Goaltending','Special Teams','Corsi/xGF','Clutch'];
+const PRESETS={
+  balanced:[15,18,22,15,15,15],
+  goalie:  [8,12,38,10,10,22],
   analytics:[10,15,18,12,30,15],
-  momentum: [30,15,18,12,12,13],
-  special:  [12,14,18,30,12,14],
+  momentum:[30,15,18,12,12,13],
+  special: [12,14,18,30,12,14],
 };
 
-let weights=[15,18,22,15,15,15], cutLine=52, bracketMode='puck', selectedBracketSeries=null;
+let weights=[15,18,22,15,15,15], cutLine=52;
+let currentPage='rankings', currentScoutIdx=0, currentDetailIdx=-1;
+// Custom bracket picks: maps seriesId -> winning team index in TEAMS
+let customPicks={};
+let bracketMode='puck';
 
 // ══════════════════════════════════════════════
 // SCORING ENGINE
 // ══════════════════════════════════════════════
-function streakScore(s){ return s>0?Math.min(100,70+s*4):s<0?Math.max(0,70+s*5):70 }
-function getW(){ const t=weights.reduce((a,b)=>a+b,0)||1; return weights.map(v=>v/t) }
-function getPillars(t){ return [streakScore(t.streak),(t.road||0.5)*100,t.goalie,t.st,t.corsi,t.clutch] }
-function calcScore(t,w){ w=w||getW(); return Math.round(getPillars(t).reduce((s,v,i)=>s+w[i]*v,0)*10)/10 }
-function scoreTeams(){ return TEAMS.map(t=>({...t,score:calcScore(t)})).sort((a,b)=>b.score-a.score) }
+function streakScore(s){ return s>0?Math.min(100,70+s*4):s<0?Math.max(0,70+s*5):70; }
+function getW(){ const t=weights.reduce((a,b)=>a+b,0)||1; return weights.map(v=>v/t); }
 
-// Criteria thresholds
-// CRITERIA — all thresholds operate on the SAME scale passed to getCritStatus
-// Momentum uses streakScore(streak) → 0-100. Everything else uses raw team value.
-const CRITERIA = [
+// Normalised pillar values — all on 0–100 scale for both scoring and display
+function getPillars(t){
+  return [
+    streakScore(t.streak),           // 0–100
+    t.road*100,                      // 0–100  (0.73 → 73)
+    t.goalie,                        // 0–100
+    t.st,                            // 0–100
+    // Corsi lives in ~45–60 range; normalise to 0–100 for scoring: (val-40)/25*100
+    Math.min(100,Math.max(0,(t.corsi-40)/25*100)),
+    t.clutch,                        // 0–100
+  ];
+}
+
+function calcScore(t,w){
+  w=w||getW();
+  return Math.round(getPillars(t).reduce((s,v,i)=>s+w[i]*v,0)*10)/10;
+}
+function scoreTeams(){
+  return TEAMS.map((t,i)=>({...t,_idx:i,score:calcScore(t)})).sort((a,b)=>b.score-a.score);
+}
+
+// ══════════════════════════════════════════════
+// CRITERIA — thresholds on NORMALISED 0–100 pillar values
+// ══════════════════════════════════════════════
+const CRITERIA=[
   {
-    key:'streak',
     label:'Momentum',
-    // v = streakScore(streak) → 0–100
-    pass:v=>v>=82,   // W3+ → score ≥82
-    warn:v=>v>=70,   // W0  → score=70, borderline
-    fmt:t=>{
-      const s=t.streak;
-      if(s>0) return `W${s} 🔥`;
-      if(s<0) return `L${Math.abs(s)} 🧊`;
-      return '— Neutral';
-    },
-    tip:v=>v>=82?'Hot streak — strong playoff momentum':v>=70?'Neutral form — neither hot nor cold':'Cold streak — serious concern entering playoffs',
+    pillarIdx:0,   // streakScore → 0–100
+    pass:v=>v>=82, warn:v=>v>=70,
+    fmt:t=>{ const s=t.streak; return s>0?`W${s} 🔥`:s<0?`L${Math.abs(s)} 🧊`:'— Neutral'; },
+    why:t=>{ const v=streakScore(t.streak); return v>=82?`Currently on a ${t.streak>0?'W'+t.streak:'L'+Math.abs(t.streak)} streak. Teams entering playoffs hot advance at a 71% clip.`:v>=70?`Neutral form (${t.streak===0?'no streak':'short run'}). Not a red flag but not a green light either.`:`On a L${Math.abs(t.streak)} skid. Teams entering on 4+ game losing streaks exit R1 at 71%.`; },
   },
   {
-    key:'road',
     label:'Road Win %',
-    // v = team.road * 100 → 0–100 scale
+    pillarIdx:1,   // road*100 → 0–100
     pass:v=>v>=55, warn:v=>v>=42,
     fmt:t=>(t.road*100).toFixed(1)+'%',
-    tip:v=>v>=55?'Road-tested — wins away from home':v>=42?'Average road record — manageable':'Road struggles — eliminated in R1 at 82% rate',
+    why:t=>{ const v=t.road*100; return v>=55?`${v.toFixed(1)}% road win rate — above the .550 Cup-winner average. Road wins are hard to fake.`:v>=42?`${v.toFixed(1)}% on the road — league average range. Won't be an asset but not fatal.`:`${v.toFixed(1)}% away — below the .420 danger threshold. 82% of sub-.420 road teams exit Round 1.`; },
   },
   {
-    key:'goalie',
     label:'Goaltending',
+    pillarIdx:2,   // direct 0–100
     pass:v=>v>=85, warn:v=>v>=78,
     fmt:t=>t.goalie+'/100',
-    tip:v=>v>=85?'Elite goaltending — Cup-caliber backstop':v>=78?'Adequate — not a liability':'Below average — goaltending is a red flag',
+    why:t=>{ const v=t.goalie; return v>=85?`Elite goaltending composite (${v}/100). Cup winner had better playoff SV% in 13/15 Finals since 2010.`:v>=78?`Adequate goaltending (${v}/100) — won't steal games but won't lose them either.`:`Below-average goaltending (${v}/100). This is a significant red flag — goaltending is the #1 Cup predictor.`; },
   },
   {
-    key:'st',
     label:'Special Teams',
+    pillarIdx:3,   // direct 0–100
     pass:v=>v>=88, warn:v=>v>=82,
     fmt:t=>t.st+'/100',
-    tip:v=>v>=88?'ST advantage compounds every game':v>=82?'Average net ST — neutral factor':'Structural ST deficit — disadvantage every game',
+    why:t=>{ const v=t.st; return v>=88?`Strong ST composite (${v}/100). Playoff refs call 12–17% more PPs — this team benefits every game.`:v>=82?`Average ST (${v}/100). Neutral factor — won't decide the series.`:`ST deficit (${v}/100). Structural disadvantage every game. Hard to overcome in a 7-game series.`; },
   },
   {
-    key:'corsi',
     label:'Corsi / xGF',
-    pass:v=>v>=54, warn:v=>v>=50,
+    pillarIdx:4,   // normalised 0–100
+    pass:v=>v>=55, warn:v=>v>=38,
     fmt:t=>t.corsi.toFixed(1)+'%',
-    tip:v=>v>=54?'True possession dominance — sustainable':v>=50?'Near league average — adequate':'Possession concern — may be overperforming',
+    why:t=>{ const v=t.corsi; return v>=54?`${v.toFixed(1)}% Corsi/xGF — genuine possession dominance. Top-quartile xGF teams reach R3 at 58% vs 34%.`:v>=50?`${v.toFixed(1)}% — near league average. Team is sustainable but not dominant in possession.`:`${v.toFixed(1)}% — below average. This team may be overperforming; possession will catch up over 7 games.`; },
   },
   {
-    key:'clutch',
     label:'Close-Game W%',
+    pillarIdx:5,   // direct 0–100
     pass:v=>v>=60, warn:v=>v>=54,
     fmt:t=>t.clutch+'%',
-    tip:v=>v>=60?'Wins tight games — playoff DNA':v>=54?'Average in close games — coin-flip risk':'Struggles in 1-goal games — massive playoff red flag',
+    why:t=>{ const v=t.clutch; return v>=60?`${v}% in 1-goal games — genuine playoff DNA. This stat correlates with playoff advancement at r=0.61.`:v>=54?`${v}% in 1-goal games — coin-flip territory. Could go either way in tight playoff games.`:`${v}% in 1-goal games — a serious red flag. Playoff hockey IS 1-goal hockey.`; },
   },
 ];
 
 function getCritStatus(team){
-  const checkVals = [
-    streakScore(team.streak),   // momentum: 0–100 converted score
-    team.road * 100,            // road: converted to 0–100 (0.73 → 73)
-    team.goalie,                // goaltending: 0–100
-    team.st,                    // special teams: 0–100
-    team.corsi,                 // corsi: ~45–60
-    team.clutch,                // clutch: 0–100
-  ];
+  const pillars=getPillars(team);
   return CRITERIA.map((c,i)=>{
-    const v=checkVals[i];
-    const pass=c.pass(v), warn=c.warn(v);
-    return {pass, warn, fail:!pass&&!warn, val:c.fmt(team), tip:c.tip(v), label:c.label};
+    const v=pillars[c.pillarIdx];
+    const pass=c.pass(v), warn=!pass&&c.warn(v), fail=!pass&&!warn;
+    return { pass, warn, fail, val:c.fmt(team), why:c.why(team), label:c.label };
   });
 }
 
 function getGrade(score){
   if(score>=72)return{grade:'A+',color:P_COLORS[0]};
-  if(score>=68)return{grade:'A',color:P_COLORS[0]};
+  if(score>=68)return{grade:'A', color:P_COLORS[0]};
   if(score>=64)return{grade:'B+',color:P_COLORS[3]};
-  if(score>=60)return{grade:'B',color:P_COLORS[3]};
+  if(score>=60)return{grade:'B', color:P_COLORS[3]};
   if(score>=56)return{grade:'C+',color:P_COLORS[2]};
-  if(score>=52)return{grade:'C',color:P_COLORS[2]};
+  if(score>=52)return{grade:'C', color:P_COLORS[2]};
   return{grade:'D',color:P_COLORS[1]};
+}
+
+// ══════════════════════════════════════════════
+// WHAT-IF ENGINE — KenPom-style movement insights
+// ══════════════════════════════════════════════
+function getWhatIfInsights(scoredTeams){
+  const insights=[];
+  const presets=[
+    {name:'Goalie-first', w:PRESETS.goalie},
+    {name:'Momentum-first',w:PRESETS.momentum},
+    {name:'Analytics-heavy',w:PRESETS.analytics},
+    {name:'Special Teams focus',w:PRESETS.special},
+  ];
+  // Find the biggest rank changes under each preset vs current
+  presets.forEach(p=>{
+    const wN=p.w.map((v,i)=>v/p.w.reduce((a,b)=>a+b,0));
+    const alt=TEAMS.map((t,i)=>({...t,_idx:i,score:calcScore(t,wN)})).sort((a,b)=>b.score-a.score);
+    alt.forEach((t,newRank)=>{
+      const curRank=scoredTeams.findIndex(s=>s._idx===t._idx);
+      const delta=curRank-newRank; // positive = moved up
+      if(Math.abs(delta)>=3){
+        insights.push({team:t.name,abbr:t.abbr,delta,preset:p.name,newRank:newRank+1,curRank:curRank+1});
+      }
+    });
+  });
+  // Sort by biggest absolute movement, dedupe by team (keep biggest move)
+  const seen=new Set();
+  return insights.sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta)).filter(i=>{ if(seen.has(i.abbr))return false; seen.add(i.abbr); return true; }).slice(0,6);
 }
 
 // ══════════════════════════════════════════════
 // RANKINGS
 // ══════════════════════════════════════════════
 function renderRankings(){
-  const showElim = document.getElementById('tog-elim')?.classList.contains('on')??true;
-  const showE    = document.getElementById('tog-east')?.classList.contains('on')??true;
-  const showW    = document.getElementById('tog-west')?.classList.contains('on')??true;
-  const scored   = scoreTeams().filter(t=>(t.conf==='E'?showE:showW));
+  const showElim=document.getElementById('tog-elim')?.classList.contains('on')??true;
+  const showE=document.getElementById('tog-east')?.classList.contains('on')??true;
+  const showW=document.getElementById('tog-west')?.classList.contains('on')??true;
+  const scored=scoreTeams().filter(t=>(t.conf==='E'?showE:showW));
   const max=scored[0]?.score||100, min=scored[scored.length-1]?.score||0;
   let html='', cup=0, dark=0, inf=0, out=0, lastTier=null;
 
@@ -680,7 +750,7 @@ function renderRankings(){
     if(cut&&!showElim)return;
     const tier=isCup?'cup':isDark?'dark':cut?'cut':'field';
     if(tier!==lastTier){
-      const lbl={cup:'Cup Contenders',dark:'Dark Horse Zone',field:'In the Field',cut:'Eliminated'};
+      const lbl={cup:'Cup Contenders',dark:'Dark Horse Zone',field:'In the Field',cut:'Eliminated by PUCK'};
       html+=`<div class="tier-sep">${lbl[tier]}</div>`; lastTier=tier;
     }
     const pct=Math.round(((t.score-min)/(max-min+0.01))*100);
@@ -689,7 +759,8 @@ function renderRankings(){
     const str=t.streak>0?`W${t.streak}`:t.streak<0?`L${Math.abs(t.streak)}`:'—';
     const scls=t.streak>0?'sw':t.streak<0?'sl':'';
     const bdg=isCup?`<span class="badge b-cup">CONTENDER</span>`:isDark?`<span class="badge b-dark">DARK HORSE</span>`:cut?`<span class="badge b-out">OUT</span>`:'';
-    html+=`<div class="trow t-${tier}" onclick="showTeamDetail(${TEAMS.indexOf(t)})">
+    // Use _idx (stable original index) for click handler
+    html+=`<div class="trow t-${tier}" onclick="showTeamDetail(${t._idx})">
       <span class="tr-num">${i+1}</span>
       <span class="tr-name">${t.name} ${bdg}</span>
       <span class="tr-conf">${t.conf}</span>
@@ -704,29 +775,50 @@ function renderRankings(){
   document.getElementById('sp-dark').textContent=dark;
   document.getElementById('sp-in').textContent=inf;
   document.getElementById('sp-out').textContent=out;
+
+  // What-if insights panel
+  const insights=getWhatIfInsights(scored);
+  let wiHTML=insights.map(ins=>{
+    const up=ins.delta>0;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:4px;background:var(--bg4);margin-bottom:5px">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:${up?'var(--green)':'var(--red)'}">${up?'▲':'▼'}${Math.abs(ins.delta)}</span>
+      <div style="flex:1">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600">${ins.team}</div>
+        <div style="font-size:11px;color:var(--text2)">moves #${ins.curRank}→#${ins.newRank} under <span style="color:var(--gold)">${ins.preset}</span> weighting</div>
+      </div>
+      <button onclick="applyPreset('${ins.preset.toLowerCase().split(' ')[0]}',null)" style="font-family:'Barlow Condensed',sans-serif;font-size:10px;padding:4px 10px;border:1px solid var(--border2);background:transparent;color:var(--ice);border-radius:3px;cursor:pointer">Apply →</button>
+    </div>`;
+  }).join('');
+  const wiEl=document.getElementById('whatif-panel');
+  if(wiEl) wiEl.innerHTML=wiHTML||'<div style="font-size:11px;color:var(--text3);padding:8px">No major ranking shifts under alternate weightings.</div>';
+
+  // Re-render detail if one was open
+  if(currentDetailIdx>=0) showTeamDetail(currentDetailIdx);
 }
 
 function showTeamDetail(idx){
   currentDetailIdx=idx;
-  document.querySelectorAll('.trow').forEach(r=>r.classList.remove('selected'));
-  const rows=document.querySelectorAll('.trow');
-  // find the right row
-  const t=TEAMS[idx]; const score=calcScore(t); const grade=getGrade(score);
+  const t=TEAMS[idx];
+  if(!t) return;
+  const score=calcScore(t); const grade=getGrade(score);
   const crit=getCritStatus(t);
   const passCount=crit.filter(c=>c.pass).length;
+  const warnCount=crit.filter(c=>c.warn).length;
+  const failCount=crit.filter(c=>c.fail).length;
   const verdict=passCount>=5?{txt:'PLAYOFF CALIBER',bg:'rgba(52,208,88,0.15)',col:'var(--green)'}
                :passCount>=3?{txt:'DARK HORSE',bg:'rgba(255,204,0,0.12)',col:'var(--gold)'}
-               :{txt:'ELIMINATED',bg:'rgba(255,45,85,0.12)',col:'var(--red)'};
+               :{txt:'WATCH LIST',bg:'rgba(255,45,85,0.12)',col:'var(--red)'};
 
   let critHTML='';
   crit.forEach(c=>{
     const cls=c.pass?'crit-pass':c.warn?'crit-warn':'crit-fail';
     const ico=c.pass?'✅':c.warn?'⚠️':'❌';
-    critHTML+=`<div class="crit-row ${cls}">
+    critHTML+=`<div class="crit-row ${cls}" title="${c.why}">
       <span class="crit-icon">${ico}</span>
       <span class="crit-label">${c.label}</span>
       <span class="crit-val">${c.val}</span>
-    </div>`;
+    </div>
+    <div style="font-size:10px;color:var(--text3);padding:2px 10px 6px 36px;line-height:1.4">${c.why}</div>`;
   });
 
   document.getElementById('detail-panel').innerHTML=`
@@ -734,140 +826,145 @@ function showTeamDetail(idx){
     <div class="dp-score-row">
       <div class="dp-score-big" style="color:${grade.color}">${score}</div>
       <div>
-        <div class="dp-verdict" style="background:${verdict.bg};color:${verdict.col}">${verdict.txt}</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--text2);margin-top:4px">${passCount}/6 criteria passed</div>
+        <div class="dp-verdict" style="background:${verdict.bg};color:${verdict.col};font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:0.15em;padding:4px 10px;border-radius:2px">${verdict.txt}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--text2);margin-top:4px">
+          ✅ ${passCount} pass · ⚠️ ${warnCount} warn · ❌ ${failCount} fail
+        </div>
       </div>
     </div>
-    <div class="dp-criteria">${critHTML}</div>
-  `;
+    <div class="dp-criteria">${critHTML}</div>`;
 }
 
 // ══════════════════════════════════════════════
 // BRACKET
 // ══════════════════════════════════════════════
 function getSeeded(conf){
-  return TEAMS.filter(t=>t.conf===conf).map(t=>({...t,score:calcScore(t)})).sort((a,b)=>a.seed-b.seed);
+  return TEAMS.map((t,i)=>({...t,_idx:i})).filter(t=>t.conf===conf).sort((a,b)=>a.seed-b.seed);
 }
 
-function projectWinner(a,b){ return calcScore(a)>=calcScore(b)?a:b }
+function projectWinner(a,b,seriesId){
+  if(bracketMode==='custom'&&customPicks[seriesId]!==undefined){
+    return customPicks[seriesId]===a._idx?a:b;
+  }
+  return calcScore(a)>=calcScore(b)?a:b;
+}
 
 function renderBracket(){
   const east=getSeeded('E'), west=getSeeded('W');
-  // Matchups: 1v8, 2v7, 3v6, 4v5
-  const matchups=[
-    {id:'E1',a:east[0],b:east[7],conf:'E',round:1},
-    {id:'E2',a:east[1],b:east[6],conf:'E',round:1},
-    {id:'E3',a:east[2],b:east[5],conf:'E',round:1},
-    {id:'E4',a:east[3],b:east[4],conf:'E',round:1},
-    {id:'W1',a:west[0],b:west[7],conf:'W',round:1},
-    {id:'W2',a:west[1],b:west[6],conf:'W',round:1},
-    {id:'W3',a:west[2],b:west[5],conf:'W',round:1},
-    {id:'W4',a:west[3],b:west[4],conf:'W',round:1},
+  // R1 matchups by seed: 1v8, 2v7, 3v6, 4v5
+  const R1=[
+    {id:'E1',a:east[0],b:east[7]},{id:'E2',a:east[1],b:east[6]},
+    {id:'E3',a:east[2],b:east[5]},{id:'E4',a:east[3],b:east[4]},
+    {id:'W1',a:west[0],b:west[7]},{id:'W2',a:west[1],b:west[6]},
+    {id:'W3',a:west[2],b:west[5]},{id:'W4',a:west[3],b:west[4]},
   ];
+  const eW=R1.slice(0,4).map(m=>projectWinner(m.a,m.b,m.id));
+  const wW=R1.slice(4,8).map(m=>projectWinner(m.a,m.b,m.id));
+  const R2E=[{id:'ES1',a:eW[0],b:eW[1]},{id:'ES2',a:eW[2],b:eW[3]}];
+  const R2W=[{id:'WS1',a:wW[0],b:wW[1]},{id:'WS2',a:wW[2],b:wW[3]}];
+  const cfETeams=R2E.map(m=>projectWinner(m.a,m.b,m.id));
+  const cfWTeams=R2W.map(m=>projectWinner(m.a,m.b,m.id));
+  const cfE={id:'ECF',a:cfETeams[0],b:cfETeams[1]}, cfW={id:'WCF',a:cfWTeams[0],b:cfWTeams[1]};
+  const finalistE=projectWinner(cfE.a,cfE.b,'ECF'), finalistW=projectWinner(cfW.a,cfW.b,'WCF');
+  const scf={id:'SCF',a:finalistE,b:finalistW};
+  const champion=projectWinner(scf.a,scf.b,'SCF');
 
-  // Project R2, CF, SCF
-  const eW1=projectWinner(matchups[0].a,matchups[0].b), eW2=projectWinner(matchups[1].a,matchups[1].b);
-  const eW3=projectWinner(matchups[2].a,matchups[2].b), eW4=projectWinner(matchups[3].a,matchups[3].b);
-  const wW1=projectWinner(matchups[4].a,matchups[4].b), wW2=projectWinner(matchups[5].a,matchups[5].b);
-  const wW3=projectWinner(matchups[6].a,matchups[6].b), wW4=projectWinner(matchups[7].a,matchups[7].b);
+  function mkSeries(m){
+    const sa=Math.round(calcScore(m.a)), sb=Math.round(calcScore(m.b));
+    const projWin=projectWinner(m.a,m.b,m.id);
+    const aWins=projWin._idx===m.a._idx;
+    const isCustom=bracketMode==='custom';
+    const aPick=isCustom&&customPicks[m.id]===m.a._idx;
+    const bPick=isCustom&&customPicks[m.id]===m.b._idx;
 
-  const r2e1=projectWinner(eW1,eW2), r2e2=projectWinner(eW3,eW4);
-  const r2w1=projectWinner(wW1,wW2), r2w2=projectWinner(wW3,wW4);
-  const cfE=projectWinner(r2e1,r2e2), cfW=projectWinner(r2w1,r2w2);
-  const champion=projectWinner(cfE,cfW);
-
-  function series(a,b,winner,id){
-    const sa=Math.round(calcScore(a)), sb=Math.round(calcScore(b));
-    const aWins=sa>=sb;
-    return `<div class="b-series" id="bs-${id}" onclick="showSeriesDetail('${id}',${TEAMS.indexOf(a)},${TEAMS.indexOf(b)})">
-      <div class="b-team ${aWins?'winner':''}">
-        <span class="b-seed">${a.seed}</span>
-        <span class="b-tname" style="color:${aWins?'var(--ice)':'var(--text)'}">${a.abbr}</span>
-        <span class="b-score-badge">${sa}</span>
+    return `<div class="b-series${m.id===currentSeriesId?' active':''}" id="bs-${m.id}" onclick="clickSeries('${m.id}',${m.a._idx},${m.b._idx})">
+      <div class="b-team ${aWins?'winner':''}" onclick="${isCustom?`event.stopPropagation();customPick('${m.id}',${m.a._idx})`:''}">
+        <span class="b-seed">${m.a.seed}</span>
+        <span class="b-tname" style="color:${aWins?'var(--ice)':'var(--text)'}">${m.a.abbr}</span>
+        <span class="b-score-badge" style="opacity:${isCustom?0.4:1}">${sa}</span>
+        ${isCustom?`<span style="font-size:10px;color:${aPick?'var(--ice)':'var(--text3)'};cursor:pointer">${aPick?'✓':'pick'}</span>`:''}
       </div>
-      <div class="b-team ${!aWins?'winner':''}">
-        <span class="b-seed">${b.seed}</span>
-        <span class="b-tname" style="color:${!aWins?'var(--ice)':'var(--text)'}">${b.abbr}</span>
-        <span class="b-score-badge">${sb}</span>
+      <div class="b-team ${!aWins?'winner':''}" onclick="${isCustom?`event.stopPropagation();customPick('${m.id}',${m.b._idx})`:''}">
+        <span class="b-seed">${m.b.seed}</span>
+        <span class="b-tname" style="color:${!aWins?'var(--ice)':'var(--text)'}">${m.b.abbr}</span>
+        <span class="b-score-badge" style="opacity:${isCustom?0.4:1}">${sb}</span>
+        ${isCustom?`<span style="font-size:10px;color:${bPick?'var(--ice)':'var(--text3)'};cursor:pointer">${bPick?'✓':'pick'}</span>`:''}
       </div>
     </div>`;
   }
 
-  function tbd(label){
-    return `<div class="b-series"><div class="b-team tbd"><span class="b-tname">${label}</span></div></div>`;
-  }
-
-  const bHTML=`
+  const html=`
     <div class="b-round">
       <div class="b-round-title">First Round — East</div>
-      <div class="b-slots">
-        ${series(matchups[0].a,matchups[0].b,eW1,'E1')}
-        ${series(matchups[1].a,matchups[1].b,eW2,'E2')}
-        ${series(matchups[2].a,matchups[2].b,eW3,'E3')}
-        ${series(matchups[3].a,matchups[3].b,eW4,'E4')}
-      </div>
+      <div class="b-slots">${R1.slice(0,4).map(mkSeries).join('')}</div>
     </div>
     <div class="b-connector">›</div>
     <div class="b-round">
-      <div class="b-round-title">Semifinals — East</div>
-      <div class="b-slots">
-        ${series(eW1,eW2,r2e1,'ES1')}
-        ${series(eW3,eW4,r2e2,'ES2')}
-      </div>
+      <div class="b-round-title">Semis — East</div>
+      <div class="b-slots">${R2E.map(mkSeries).join('')}</div>
     </div>
     <div class="b-connector">›</div>
     <div class="b-round">
-      <div class="b-round-title">Conf. Final — East</div>
-      <div class="b-slots" style="justify-content:center">
-        ${series(r2e1,r2e2,cfE,'ECF')}
-      </div>
+      <div class="b-round-title">East Final</div>
+      <div class="b-slots" style="justify-content:center">${mkSeries(cfE)}</div>
     </div>
     <div class="b-connector">›</div>
     <div class="champion-box">
-      <div class="champ-label">Stanley Cup Champion</div>
+      <div class="champ-label">Stanley Cup</div>
       <div class="champ-trophy">🏆</div>
       <div class="champ-name">${champion.abbr}</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--text2);margin-top:4px">${Math.round(calcScore(champion))} PUCK</div>
+      <div style="font-size:10px;color:var(--text2);margin-top:4px">${Math.round(calcScore(champion))} PUCK</div>
+      ${mkSeries(scf).replace('b-series','b-series' )}
     </div>
     <div class="b-connector">‹</div>
     <div class="b-round">
-      <div class="b-round-title">Conf. Final — West</div>
-      <div class="b-slots" style="justify-content:center">
-        ${series(r2w1,r2w2,cfW,'WCF')}
-      </div>
+      <div class="b-round-title">West Final</div>
+      <div class="b-slots" style="justify-content:center">${mkSeries(cfW)}</div>
     </div>
     <div class="b-connector">‹</div>
     <div class="b-round">
-      <div class="b-round-title">Semifinals — West</div>
-      <div class="b-slots">
-        ${series(wW1,wW2,r2w1,'WS1')}
-        ${series(wW3,wW4,r2w2,'WS2')}
-      </div>
+      <div class="b-round-title">Semis — West</div>
+      <div class="b-slots">${R2W.map(mkSeries).join('')}</div>
     </div>
     <div class="b-connector">‹</div>
     <div class="b-round">
       <div class="b-round-title">First Round — West</div>
-      <div class="b-slots">
-        ${series(matchups[4].a,matchups[4].b,wW1,'W1')}
-        ${series(matchups[5].a,matchups[5].b,wW2,'W2')}
-        ${series(matchups[6].a,matchups[6].b,wW3,'W3')}
-        ${series(matchups[7].a,matchups[7].b,wW4,'W4')}
-      </div>
+      <div class="b-slots">${R1.slice(4,8).map(mkSeries).join('')}</div>
     </div>`;
 
-  document.getElementById('bracket-inner').innerHTML=bHTML;
+  document.getElementById('bracket-inner').innerHTML=html;
+  if(currentSeriesId) showSeriesDetail(currentSeriesId);
 }
 
-function showSeriesDetail(id, aIdx, bIdx){
-  const a=TEAMS[aIdx], b=TEAMS[bIdx];
+let currentSeriesId=null;
+function clickSeries(id,aIdx,bIdx){
+  currentSeriesId=id;
+  showSeriesDetail(id,aIdx,bIdx);
+  renderBracket(); // re-render to highlight active
+}
+
+function customPick(seriesId,teamIdx){
+  if(bracketMode!=='custom')return;
+  customPicks[seriesId]=teamIdx;
+  renderBracket();
+}
+
+function showSeriesDetail(id){
+  // Find the two teams from the bracket
+  const el=document.getElementById('series-detail');
+  if(!el)return;
+  // Re-extract from current bracket state — parse from the DOM series id
+  const seriesEl=document.getElementById('bs-'+id);
+  if(!seriesEl){el.style.display='none';return;}
+
+  // Find teams by reading the bracket structure
+  const teams=getSeriesTeams(id);
+  if(!teams)return;
+  const {a,b}=teams;
   const sa=Math.round(calcScore(a)), sb=Math.round(calcScore(b));
   const diff=Math.abs(sa-sb);
   const winner=sa>=sb?a:b;
-  const loser=sa>=sb?b:a;
-  const winScore=Math.max(sa,sb), loseScore=Math.min(sa,sb);
-
-  // Series length prediction based on score gap
-  const len=diff>12?'4–1 or better':diff>7?'4–2':diff>3?'4–3':'Could go either way';
+  const seriesLen=diff>12?'4–1 sweep likely':diff>7?'4–2 projected':diff>3?'4–3 — goes the distance':'Could genuinely go either way';
 
   function critRows(t){
     return getCritStatus(t).map(c=>{
@@ -875,36 +972,58 @@ function showSeriesDetail(id, aIdx, bIdx){
       return `<div class="sd-crit-row ${cls}">
         <span class="sd-crit-lbl">${c.label}</span>
         <span class="sd-crit-val">${c.val}</span>
-      </div>`;
+      </div>
+      <div style="font-size:10px;color:var(--text3);padding:1px 0 4px 8px;line-height:1.4">${c.why}</div>`;
     }).join('');
   }
 
-  const el=document.getElementById('series-detail');
   el.style.display='block';
   el.innerHTML=`
-    <div class="sd-title">Series Breakdown: ${a.abbr} vs ${b.abbr}</div>
+    <div class="sd-title">${a.abbr} vs ${b.abbr} — Series Analysis</div>
     <div class="sd-grid">
       <div class="sd-team-card">
-        <div class="sd-team-name" style="color:${sa>=sb?'var(--ice)':'var(--text)'}">${a.name} — ${sa}</div>
+        <div class="sd-team-name" style="color:${sa>=sb?'var(--ice)':'var(--text)'}">${a.name} <span style="font-family:'Barlow Condensed',sans-serif;font-size:18px">${sa}</span></div>
         <div class="sd-crit">${critRows(a)}</div>
       </div>
       <div class="sd-team-card">
-        <div class="sd-team-name" style="color:${sb>sa?'var(--ice)':'var(--text)'}">${b.name} — ${sb}</div>
+        <div class="sd-team-name" style="color:${sb>sa?'var(--ice)':'var(--text)'}">${b.name} <span style="font-family:'Barlow Condensed',sans-serif;font-size:18px">${sb}</span></div>
         <div class="sd-crit">${critRows(b)}</div>
       </div>
     </div>
     <div class="sd-prediction">
       <div class="sd-pred-label">PUCK Projection</div>
-      <div class="sd-pred-val">${winner.name} wins — ${len}</div>
-      <div style="font-size:11px;color:var(--text2);margin-top:6px">Score gap: ${diff.toFixed(1)} pts · ${diff>10?'Clear favourite':'Competitive series expected'}</div>
+      <div class="sd-pred-val">${winner.name} wins · ${seriesLen}</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:4px">Score gap: ${diff.toFixed(1)} pts · ${diff<4?'One hot goaltending game could flip this entirely.':'Consistent edge across multiple pillars.'}</div>
     </div>`;
-  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// Map series IDs back to team pairs
+function getSeriesTeams(id){
+  const east=getSeeded('E'), west=getSeeded('W');
+  const eW=[ ['E1',east[0],east[7]],['E2',east[1],east[6]],['E3',east[2],east[5]],['E4',east[3],east[4]] ]
+    .map(([sid,a,b])=>({sid,a,b,winner:projectWinner(a,b,sid)}));
+  const wW=[ ['W1',west[0],west[7]],['W2',west[1],west[6]],['W3',west[2],west[5]],['W4',west[3],west[4]] ]
+    .map(([sid,a,b])=>({sid,a,b,winner:projectWinner(a,b,sid)}));
+
+  const eR2=[ {sid:'ES1',a:eW[0].winner,b:eW[1].winner}, {sid:'ES2',a:eW[2].winner,b:eW[3].winner} ]
+    .map(m=>({...m,winner:projectWinner(m.a,m.b,m.sid)}));
+  const wR2=[ {sid:'WS1',a:wW[0].winner,b:wW[1].winner}, {sid:'WS2',a:wW[2].winner,b:wW[3].winner} ]
+    .map(m=>({...m,winner:projectWinner(m.a,m.b,m.sid)}));
+
+  const cfE={sid:'ECF',a:eR2[0].winner,b:eR2[1].winner};
+  const cfW={sid:'WCF',a:wR2[0].winner,b:wR2[1].winner};
+  const scf={sid:'SCF',a:projectWinner(cfE.a,cfE.b,'ECF'),b:projectWinner(cfW.a,cfW.b,'WCF')};
+
+  const all=[...eW,...wW,...eR2,...wR2,{sid:'ECF',...cfE},{sid:'WCF',...cfW},scf];
+  const found=all.find(m=>m.sid===id);
+  return found?{a:found.a,b:found.b}:null;
 }
 
 function setBracketMode(mode,btn){
   bracketMode=mode;
+  if(mode==='puck') customPicks={};
   document.querySelectorAll('.bc-btn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
+  if(btn)btn.classList.add('on');
   renderBracket();
 }
 
@@ -912,75 +1031,108 @@ function setBracketMode(mode,btn){
 // SCOUT REPORT
 // ══════════════════════════════════════════════
 function renderScoutButtons(){
-  const btns=TEAMS.map((t,i)=>`<button class="scout-team-btn" onclick="renderScout(${i},this)">${t.abbr}</button>`).join('');
-  document.getElementById('scout-btns').innerHTML=btns;
+  const html=TEAMS.map((t,i)=>`<button class="scout-team-btn${i===currentScoutIdx?' on':''}" onclick="renderScout(${i})">${t.abbr}</button>`).join('');
+  document.getElementById('scout-btns').innerHTML=html;
 }
 
-function renderScout(idx,btn){
+function renderScout(idx){
   currentScoutIdx=idx;
+  // Update button highlights
   document.querySelectorAll('.scout-team-btn').forEach((b,i)=>{
-    b.classList.remove('on');
-    if(i===idx) b.classList.add('on');
+    b.classList.toggle('on',i===idx);
   });
-  const t=TEAMS[idx]; const score=calcScore(t); const grade=getGrade(score);
+  const t=TEAMS[idx];
+  const score=calcScore(t); const grade=getGrade(score);
   const crit=getCritStatus(t);
   const passCount=crit.filter(c=>c.pass).length;
-  const warnCount=crit.filter(c=>c.warn).length;
+  const warnCount=crit.filter(c=>c.warn&&!c.pass).length; // FIXED: warn means warn only, not pass
   const failCount=crit.filter(c=>c.fail).length;
 
   const verdictText=passCount>=5
-    ?`${t.name} is a legitimate Cup contender. They pass ${passCount} of 6 criteria and show no critical weaknesses. The model projects them deep into the playoffs.`
+    ?`${t.name} is a legitimate Cup contender. They pass ${passCount} of 6 criteria with ${failCount===0?'no':'minimal'} red flags. The model projects them deep into the playoffs — they check every box a championship team needs.`
     :passCount>=3
-    ?`${t.name} is a legitimate dark horse. They pass ${passCount} criteria but have ${failCount} red flag${failCount!==1?'s':''}. The right matchup could take them far.`
-    :`${t.name} has concerns on ${failCount} of 6 criteria. The model projects an early exit unless they address their weaknesses before the playoffs.`;
+    ?`${t.name} is a dark horse. They pass ${passCount} criteria but carry ${failCount} red flag${failCount!==1?'s':''}. Under the right weighting — especially ${crit.filter(c=>c.pass).map(c=>c.label).slice(0,2).join(' and ')} — they could surprise.`
+    :`${t.name} fails ${failCount} of 6 criteria. The model projects an early exit. Their biggest concern is ${crit.filter(c=>c.fail).map(c=>c.label)[0]||'overall profile'}.`;
 
+  // Pillar bars — normalised to 0–100 for visual width, raw context label
   const pillars=getPillars(t);
+  const pillarContexts=[
+    `Raw streak: ${t.streak>0?'W'+t.streak:t.streak<0?'L'+Math.abs(t.streak):'Neutral'} → score ${Math.round(pillars[0])}`,
+    `Road W% ${(t.road*100).toFixed(1)}% (league avg ~50%)`,
+    `Goalie composite ${t.goalie}/100 (Cup caliber: 85+)`,
+    `Special Teams ${t.st}/100 (advantage threshold: 88)`,
+    `Corsi/xGF ${t.corsi.toFixed(1)}% (league avg ~50%, elite: 54+)`,
+    `Close-game W% ${t.clutch}% (threshold: 60%)`,
+  ];
+
   const radarHTML=P_NAMES.map((n,i)=>{
-    const pct=Math.round(pillars[i]);
+    const v=Math.round(pillars[i]);
     return `<div class="radar-stat">
       <span class="rs-label">${n}</span>
-      <div class="rs-bar-wrap"><div class="rs-bar-fill" style="width:${pct}%;background:${P_COLORS[i]}"></div></div>
-      <span class="rs-val" style="color:${P_COLORS[i]}">${pct}</span>
-    </div>`;
+      <div class="rs-bar-wrap"><div class="rs-bar-fill" style="width:${v}%;background:${P_COLORS[i]}"></div></div>
+      <span class="rs-val" style="color:${P_COLORS[i]}">${v}</span>
+    </div>
+    <div style="font-size:10px;color:var(--text3);padding:1px 0 8px 0;line-height:1.4">${pillarContexts[i]}</div>`;
   }).join('');
 
-  const critListHTML=crit.map((c,i)=>{
+  const critListHTML=crit.map(c=>{
     const cls=c.pass?'scl-pass':c.warn?'scl-warn':'scl-fail';
     const ico=c.pass?'✅':c.warn?'⚠️':'❌';
     return `<div class="scl-item ${cls}">
       <span class="scl-ico">${ico}</span>
       <div class="scl-body">
-        <div class="scl-name">${c.label}</div>
-        <div class="scl-desc">${c.tip}</div>
+        <div class="scl-name">${c.label} — ${c.val}</div>
+        <div class="scl-desc">${c.why}</div>
       </div>
-      <span class="scl-val">${c.val}</span>
     </div>`;
   }).join('');
+
+  // Weight sensitivity: how does this team's rank change under alternates?
+  const cur=scoreTeams();
+  const curRank=cur.findIndex(s=>s._idx===idx)+1;
+  const sensitivityHTML=Object.entries(PRESETS).map(([name,pw])=>{
+    if(name==='balanced')return null;
+    const wN=pw.map((v,i)=>v/pw.reduce((a,b)=>a+b,0));
+    const alt=TEAMS.map((t2,i)=>({...t2,_idx:i,score:calcScore(t2,wN)})).sort((a,b)=>b.score-a.score);
+    const altRank=alt.findIndex(s=>s._idx===idx)+1;
+    const delta=curRank-altRank;
+    const col=delta>0?'var(--green)':delta<0?'var(--red)':'var(--text2)';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px">
+      <span style="color:var(--text2)">${name.charAt(0).toUpperCase()+name.slice(1)}</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:${col}">#${altRank} ${delta>0?'▲'+delta:delta<0?'▼'+Math.abs(delta):'—'}</span>
+    </div>`;
+  }).filter(Boolean).join('');
 
   document.getElementById('scout-content').innerHTML=`
     <div>
       <div class="scout-score-card">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text2);margin-bottom:4px">PUCK Score</div>
         <div class="scout-big-score" style="color:${grade.color}">${score}</div>
-        <div class="scout-grade" style="color:${grade.color}">Grade: ${grade.grade}</div>
-        <div style="display:flex;gap:10px;margin-bottom:12px">
-          <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--green)">✅ ${passCount} PASS</span>
-          <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--gold)">⚠️ ${warnCount} WARN</span>
-          <span style="font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--red)">❌ ${failCount} FAIL</span>
+        <div class="scout-grade" style="color:${grade.color}">Grade: ${grade.grade} · Rank #${curRank} overall</div>
+        <div style="display:flex;gap:12px;margin:8px 0 10px">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--green)">✅ ${passCount} Pass</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--gold)">⚠️ ${warnCount} Warn</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--red)">❌ ${failCount} Fail</span>
         </div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--text2)">${t.wins}W–${t.losses}L · ${t.conf === 'E' ? 'Eastern' : 'Western'} · Seed ${t.seed}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--text2)">${t.wins}W–${t.losses}L · ${t.conf==='E'?'Eastern':'Western'} · Seed ${t.seed}</div>
       </div>
       <div class="verdict-summary">
         <div class="vs-label">Model verdict</div>
         <div class="vs-text">${verdictText}</div>
       </div>
       <div class="scout-score-card">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:14px">Pillar Breakdown</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:12px">Pillar breakdown — with context</div>
         ${radarHTML}
+      </div>
+      <div class="scout-score-card">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Rank under alternate weightings</div>
+        <div style="font-size:10px;color:var(--text3);margin-bottom:8px">Current rank: #${curRank} (Balanced)</div>
+        ${sensitivityHTML}
       </div>
     </div>
     <div class="scout-criteria-list">
-      <div class="scl-title">Pass / Fail Criteria</div>
+      <div class="scl-title">Full Pass / Fail Report</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:14px;line-height:1.5">Each criterion explains why this team passes or fails — not just the number, but what it means for a 7-game series.</div>
       ${critListHTML}
     </div>`;
 }
@@ -993,10 +1145,7 @@ function populateSelects(){
     const sel=document.getElementById(id);
     if(!sel)return;
     sel.innerHTML='';
-    TEAMS.forEach((t,i)=>{
-      const o=document.createElement('option');
-      o.value=i; o.textContent=t.name; sel.appendChild(o);
-    });
+    TEAMS.forEach((t,i)=>{const o=document.createElement('option');o.value=i;o.textContent=t.name;sel.appendChild(o);});
     if(di===1&&TEAMS.length>1)sel.value=1;
   });
 }
@@ -1004,81 +1153,108 @@ function populateSelects(){
 function renderCompare(){
   const ai=+document.getElementById('cmp-a')?.value||0;
   const bi=+document.getElementById('cmp-b')?.value||1;
+  if(ai===bi)return;
   const a=TEAMS[ai],b=TEAMS[bi];
   const sa=calcScore(a),sb=calcScore(b);
-  const total=sa+sb; const aPct=Math.round((sa/total)*100); const bPct=100-aPct;
-  const aWins=sa>=sb;
   const diff=Math.abs(sa-sb);
-  const critA=getCritStatus(a), critB=getCritStatus(b);
+  const aWins=sa>=sb;
+  const total=sa+sb;
+  const aPct=Math.round((sa/total)*100), bPct=100-aPct;
 
-  // Verdict bar
   document.getElementById('verdict-bar').innerHTML=`
     <div class="vb-scores">
       <div class="vb-team">
         <div class="vb-tname">${a.name}</div>
         <div class="vb-score ${aWins?'vb-win':'vb-lose'}">${Math.round(sa)}</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--text2)">${critA.filter(c=>c.pass).length}/6 criteria</div>
+        <div style="font-size:11px;color:var(--text2)">${getCritStatus(a).filter(c=>c.pass).length}/6 criteria pass</div>
       </div>
       <div class="vb-team">
         <div class="vb-tname">${b.name}</div>
         <div class="vb-score ${!aWins?'vb-win':'vb-lose'}">${Math.round(sb)}</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--text2)">${critB.filter(c=>c.pass).length}/6 criteria</div>
+        <div style="font-size:11px;color:var(--text2)">${getCritStatus(b).filter(c=>c.pass).length}/6 criteria pass</div>
       </div>
     </div>
     <div class="vb-meter">
       <div class="vb-meter-a" style="width:${aPct}%"></div>
       <div class="vb-meter-b" style="width:${bPct}%"></div>
     </div>
-    <div class="vb-edge">${aWins?a.name:b.name} has a +${diff.toFixed(1)} PUCK advantage · ${diff>12?'Clear favourite — expect a shorter series':diff>6?'Moderate edge — competitive series likely':'Very close — this could go 7 games'}</div>`;
+    <div class="vb-edge">${aWins?a.name:b.name} has +${diff.toFixed(1)} PUCK edge · ${diff>12?'Clear favourite — shorter series expected':diff>6?'Moderate edge — competitive series':diff>2?'Tight match — could go 7 games':'Nearly even — flip a coin'}</div>`;
 
-  // Criteria grid — pass/fail side by side
+  // Criteria grid
+  const getCV=t=>[streakScore(t.streak),t.road*100,t.goalie,t.st,t.corsi,t.clutch];
   let cgHTML='';
   CRITERIA.forEach((c,i)=>{
-    const checkA=[streakScore(a.streak),a.road,a.goalie,a.st,a.corsi,a.clutch][i];
-    const checkB=[streakScore(b.streak),b.road,b.goalie,b.st,b.corsi,b.clutch][i];
-    const aPass=c.pass(checkA), aWarn=c.warn(checkA), aFail=!aPass&&!aWarn;
-    const bPass=c.pass(checkB), bWarn=c.warn(checkB), bFail=!bPass&&!bWarn;
-    const aEdge=checkA>checkB, bEdge=checkB>checkA;
-    cgHTML+=`
-      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">${c.label}</div>
-        <div class="cf-row ${aPass?'cf-pass':aWarn?'cf-warn':'cf-fail'}">
-          <span class="cf-icon">${aPass?'✅':aWarn?'⚠️':'❌'}</span>
-          <span class="cf-label">${a.abbr}${aEdge?' 🔼':''}</span>
-          <span class="cf-value">${c.fmt(a)}</span>
-        </div>
-        <div class="cf-row ${bPass?'cf-pass':bWarn?'cf-warn':'cf-fail'}">
-          <span class="cf-icon">${bPass?'✅':bWarn?'⚠️':'❌'}</span>
-          <span class="cf-label">${b.abbr}${bEdge?' 🔼':''}</span>
-          <span class="cf-value">${c.fmt(b)}</span>
-        </div>
-      </div>`;
+    const va=getCV(a)[i], vb=getCV(b)[i];
+    const aPass=c.pass(va),aWarn=!aPass&&c.warn(va);
+    const bPass=c.pass(vb),bWarn=!bPass&&c.warn(vb);
+    const aEdge=va>vb, bEdge=vb>va;
+    cgHTML+=`<div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:16px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">${c.label}${aEdge?` <span style="color:var(--ice);font-size:9px">▲ ${a.abbr}</span>`:bEdge?` <span style="color:var(--red);font-size:9px">▲ ${b.abbr}</span>`:''}</div>
+      <div class="cf-row ${aPass?'cf-pass':aWarn?'cf-warn':'cf-fail'}" style="margin-bottom:6px">
+        <span class="cf-icon">${aPass?'✅':aWarn?'⚠️':'❌'}</span>
+        <span class="cf-label">${a.abbr}</span>
+        <span class="cf-value">${c.fmt(a)}</span>
+      </div>
+      <div style="font-size:10px;color:var(--text3);padding:0 0 8px 24px;line-height:1.4">${c.why(a)}</div>
+      <div class="cf-row ${bPass?'cf-pass':bWarn?'cf-warn':'cf-fail'}">
+        <span class="cf-icon">${bPass?'✅':bWarn?'⚠️':'❌'}</span>
+        <span class="cf-label">${b.abbr}</span>
+        <span class="cf-value">${c.fmt(b)}</span>
+      </div>
+      <div style="font-size:10px;color:var(--text3);padding:0 0 4px 24px;line-height:1.4">${c.why(b)}</div>
+    </div>`;
   });
   document.getElementById('crit-grid').innerHTML=cgHTML;
 
   // Series prediction
   const seriesLen=diff>12?'4–1':diff>7?'4–2':diff>3?'4–3':'7 games possible';
-  const getCheckVals=t=>[streakScore(t.streak),t.road*100,t.goalie,t.st,t.corsi,t.clutch];
-  const aAdvantages=CRITERIA.filter((c,i)=>{const ra=getCheckVals(a)[i],rb=getCheckVals(b)[i];return ra>rb}).map(c=>c.label);
-  const bAdvantages=CRITERIA.filter((c,i)=>{const ra=getCheckVals(a)[i],rb=getCheckVals(b)[i];return rb>ra}).map(c=>c.label);
-
+  const aAdv=CRITERIA.filter((c,i)=>getCV(a)[i]>getCV(b)[i]).map(c=>c.label);
+  const bAdv=CRITERIA.filter((c,i)=>getCV(b)[i]>getCV(a)[i]).map(c=>c.label);
   document.getElementById('series-pred').innerHTML=`
-    <div class="sp-header">Series Projection — if these two met in the playoffs</div>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--ice);margin-bottom:12px">${aWins?a.name:b.name} wins ${seriesLen}</div>
+    <div class="sp-header">If these two met in the playoffs</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--ice);margin-bottom:14px">${aWins?a.name:b.name} wins ${seriesLen}</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
       <div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">${a.name} edges</div>
-        ${aAdvantages.map(l=>`<div style="font-size:12px;color:var(--green);margin-bottom:3px">✅ ${l}</div>`).join('')||'<div style="font-size:12px;color:var(--text2)">No clear advantages</div>'}
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">${a.name} wins on</div>
+        ${aAdv.map(l=>`<div style="font-size:12px;color:var(--green);margin-bottom:3px">✅ ${l}</div>`).join('')||'<div style="font-size:11px;color:var(--text3)">No pillar advantages</div>'}
       </div>
       <div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">${b.name} edges</div>
-        ${bAdvantages.map(l=>`<div style="font-size:12px;color:var(--red);margin-bottom:3px">✅ ${l}</div>`).join('')||'<div style="font-size:12px;color:var(--text2)">No clear advantages</div>'}
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text2);margin-bottom:6px">${b.name} wins on</div>
+        ${bAdv.map(l=>`<div style="font-size:12px;color:var(--red);margin-bottom:3px">✅ ${l}</div>`).join('')||'<div style="font-size:11px;color:var(--text3)">No pillar advantages</div>'}
       </div>
     </div>
-    <div class="sp-analysis">
-      <strong>${aWins?a.name:b.name}</strong> has the edge in ${(aWins?aAdvantages:bAdvantages).slice(0,2).join(' and ')||'overall score'}. 
-      ${diff<5?`This is one of the closest matchups in the model — a single hot goaltending performance could flip the series.`:`With a ${diff.toFixed(1)}-point gap, the model projects a ${seriesLen} result unless ${aWins?b.name:a.name} gets elite goaltending to compensate.`}
+    <div class="sp-analysis"><strong>${aWins?a.name:b.name}</strong> holds the edge on ${(aWins?aAdv:bAdv).slice(0,3).join(', ')||'overall composite score'}. ${diff<4?`At only ${diff.toFixed(1)} points apart, a single goaltending performance could flip this series.`:`The ${diff.toFixed(1)}-point gap reflects consistent advantages across multiple pillars, not just one hot stat.`}</div>`;
+}
+
+// ══════════════════════════════════════════════
+// RESEARCH — teams that fit criteria
+// ══════════════════════════════════════════════
+function renderCriteriaFilter(){
+  const el=document.getElementById('criteria-filter-results');
+  if(!el)return;
+  const checks=document.querySelectorAll('.crit-filter-check');
+  const required=Array.from(checks).filter(c=>c.checked).map(c=>+c.value);
+  if(required.length===0){
+    el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:16px">Check criteria above to filter teams.</div>';
+    return;
+  }
+  const results=TEAMS.map((t,i)=>({...t,_idx:i,crit:getCritStatus(t),score:calcScore(t)}))
+    .filter(t=>required.every(ci=>t.crit[ci].pass))
+    .sort((a,b)=>b.score-a.score);
+
+  if(results.length===0){
+    el.innerHTML='<div style="font-size:12px;color:var(--red);padding:16px">No teams currently pass all selected criteria.</div>';
+    return;
+  }
+  el.innerHTML=results.map(t=>{
+    const passCount=t.crit.filter(c=>c.pass).length;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:5px;background:var(--bg4);margin-bottom:5px;border:1px solid var(--border)">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--ice);min-width:36px">${Math.round(t.score)}</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;flex:1">${t.name}</span>
+      <span style="font-size:11px;color:var(--text2)">${passCount}/6 criteria</span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;padding:3px 8px;border-radius:2px;background:${passCount>=5?'rgba(52,208,88,0.12)':passCount>=3?'rgba(255,204,0,0.1)':'rgba(255,45,85,0.1)'};color:${passCount>=5?'var(--green)':passCount>=3?'var(--gold)':'var(--red)'}">${passCount>=5?'CONTENDER':passCount>=3?'DARK HORSE':'WATCH'}</span>
     </div>`;
+  }).join('');
 }
 
 // ══════════════════════════════════════════════
@@ -1089,15 +1265,33 @@ function updateW(){
     weights[i-1]=+document.getElementById('fw'+i).value;
     document.getElementById('fwv'+i).textContent=weights[i-1]+'%';
     document.getElementById('fw'+i+'d').textContent=weights[i-1];
+    // sync rank page mini-sliders if they exist
+    const rsl=document.getElementById('rfw'+i);
+    if(rsl) rsl.value=weights[i-1];
   }
   renderAll();
 }
 
-function applyPreset(name,btn){
-  weights=[...PRESETS[name]];
+function syncRankSlider(i,v){
+  weights[i-1]=+v;
+  document.getElementById('fw'+i).value=v;
+  document.getElementById('fwv'+i).textContent=v+'%';
+  document.getElementById('fw'+i+'d').textContent=v;
+  const rfwv=document.getElementById('rfwv'+i);
+  if(rfwv) rfwv.textContent=v+'%';
+  renderAll();
+}
+
+function applyPreset(nameRaw,btn){
+  const key=nameRaw.toLowerCase().split(' ')[0];
+  const p=PRESETS[key]||PRESETS.balanced;
+  weights=[...p];
   for(let i=1;i<=6;i++){
-    const el=document.getElementById('fw'+i);
-    if(el){el.value=weights[i-1];document.getElementById('fwv'+i).textContent=weights[i-1]+'%';document.getElementById('fw'+i+'d').textContent=weights[i-1];}
+    document.getElementById('fw'+i).value=weights[i-1];
+    document.getElementById('fwv'+i).textContent=weights[i-1]+'%';
+    document.getElementById('fw'+i+'d').textContent=weights[i-1];
+    const rsl=document.getElementById('rfw'+i);
+    if(rsl){rsl.value=weights[i-1];document.getElementById('rfwv'+i).textContent=weights[i-1]+'%';}
   }
   document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('on'));
   if(btn)btn.classList.add('on');
@@ -1106,15 +1300,15 @@ function applyPreset(name,btn){
 
 function setCut(v){ cutLine=+v; document.getElementById('cut-disp').textContent=v; renderAll(); }
 
-// Track active state so sliders always re-render whatever is open
-let currentPage='rankings', currentScoutIdx=0, currentDetailIdx=-1;
-
+// ══════════════════════════════════════════════
+// RENDER ALL
+// ══════════════════════════════════════════════
 function renderAll(){
   renderRankings();
   renderBracket();
   renderCompare();
-  if(currentPage==='scout' && currentScoutIdx>=0) renderScout(currentScoutIdx,null);
-  if(currentDetailIdx>=0) showTeamDetail(currentDetailIdx);
+  if(currentPage==='scout') renderScout(currentScoutIdx);
+  if(currentPage==='research') renderCriteriaFilter();
 }
 
 // ══════════════════════════════════════════════
@@ -1128,7 +1322,8 @@ function nav(page,btn){
   currentPage=page;
   if(page==='compare')renderCompare();
   if(page==='bracket')renderBracket();
-  if(page==='scout')renderScoutButtons();
+  if(page==='scout'){renderScoutButtons();renderScout(currentScoutIdx);}
+  if(page==='research')renderCriteriaFilter();
 }
 
 // ══════════════════════════════════════════════
@@ -1136,8 +1331,7 @@ function nav(page,btn){
 // ══════════════════════════════════════════════
 populateSelects();
 renderAll();
-renderScoutButtons();
-renderScout(0, null); // load Colorado by default
+renderScout(0);
 </script>
 </body>
 </html>
